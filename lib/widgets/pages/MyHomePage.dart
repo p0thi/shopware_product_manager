@@ -1,13 +1,9 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
-import 'dart:math';
 
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/main.dart';
-import 'package:flutter_app/models/Product.dart';
+import 'package:flutter_app/models/product.dart';
 import 'package:flutter_app/util/AppRouter.dart';
 import 'package:flutter_app/util/Util.dart';
 import 'package:flutter_app/widgets/components/ProductPreview.dart';
@@ -24,28 +20,38 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Product> _products;
+  List<Product> _products = new List<Product>();
+  bool _stillLoading = false;
 
   @override
   initState() {
     super.initState();
+    _stillLoading = true;
     SharedPreferences.getInstance().then((prefs) async {
-      bool isAuthenticated = await Util.checkCredentials(prefs.getString("username"), prefs.getString("pass"));
-      print(isAuthenticated);
-      http.get("${Util.baseApiUrl}articles", headers: Util.httpHeaders(prefs.getString("username"), prefs.getString("pass")))
+      bool isAuthenticated = await Util.checkCredentials(
+          prefs.getString("username"), prefs.getString("pass"));
+      print("authenticated: $isAuthenticated");
+      http
+          .get("${Util.baseApiUrl}articles",
+              headers: Util.httpHeaders(
+                  prefs.getString("username"), prefs.getString("pass")))
           .then((response) async {
-            print(response.body);
+        print(response.body);
         Map<String, dynamic> parsedRequest = json.decode(response.body);
         List<Product> tmp = new List();
         for (var i = 0; i < parsedRequest["data"].length; i++) {
-          await Product.fromId(parsedRequest["data"][i]["id"]).then((product) => tmp.add(product));
+          await Product.fromId(parsedRequest["data"][i]["id"]).then((product) {
+            setState(() {
+              _products.add(product);
+            });
+          });
         }
 /*
         for (var i = 0; i < 30; i++) {
           tmp.add(Product.fromJson('{"data":{"id":999,"name":"Ich mag Züge","description":"Züge ich mag","mainDetail":{"inStock":${new Random().nextInt(2)},"releaseDate": "2018-03-17T00:00:00+0100"}},"success":true}'));
         }*/
         setState(() {
-          _products = tmp;
+          _stillLoading = false;
         });
       });
     });
@@ -53,10 +59,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> getProductWidgets() {
     List<Widget> result = new List();
-    if (_products == null)
-      return result;
-    for(Product product in _products) {
+    if (_products == null) return result;
+    for (Product product in _products) {
       result.add(new ProductPreview(product));
+    }
+    if (_stillLoading) {
+      result.add(Center(child: CircularProgressIndicator()));
     }
     return result;
   }
@@ -71,7 +79,9 @@ class _MyHomePageState extends State<MyHomePage> {
         children: getProductWidgets(),
       ),
       floatingActionButton: new FloatingActionButton(
-        onPressed: () => new AppRouter().router().navigateTo(context, "/product/33", transition: TransitionType.native),
+        onPressed: () => new AppRouter().router().navigateTo(
+            context, "/product/33",
+            transition: TransitionType.native),
         tooltip: 'Increment',
         child: new Icon(Icons.add),
       ),

@@ -1,10 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/ImageData.dart';
+import 'package:flutter_app/models/imageData.dart';
+import 'package:zoomable_image/zoomable_image.dart';
 
-class ImageViewer extends StatelessWidget {
+class ImageViewer extends StatefulWidget {
   ImageData _image;
 
   ImageViewer(this._image);
+  @override
+  _ImageViewerState createState() => _ImageViewerState();
+}
+
+class _ImageViewerState extends State<ImageViewer> {
+  Image _image;
+
+  @override
+  void initState() {
+    super.initState();
+    _image = widget._image.image ?? widget._image.thumbnail;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,16 +27,24 @@ class ImageViewer extends StatelessWidget {
       ),
       body: Container(
         child: Column(
+//          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            GestureDetector(
-              child: _image.image ?? _image.thumbnail,
+            Expanded(
+              child: Material(
+                child: Container(
+                  child: ZoomableImage(
+                    _image.image,
+                    backgroundColor: Colors.white70,
+                  ),
+                ),
+              ),
             ),
-            Text("Image: ${_image.image != null}"),
-            Text("Thumbnail: ${_image.thumbnail != null}"),
+            Text("Image: ${widget._image.image != null}"),
+            Text("Thumbnail: ${widget._image.thumbnail != null}"),
             Row(
               children: <Widget>[
                 RaisedButton(
-                  onPressed: null,
+                  onPressed: () => Navigator.pop(context),
                   child: Text("Schließen"),
                 ),
                 RaisedButton(

@@ -1,8 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/ImageData.dart';
-import 'package:flutter_app/models/Product.dart';
+import 'package:flutter_app/models/imageData.dart';
+import 'package:flutter_app/models/product.dart';
 import 'package:flutter_app/widgets/components/PhotoComposer.dart';
 
 class CreateProductPage extends StatefulWidget {
@@ -21,24 +19,64 @@ class _CreateProductPageState extends State<CreateProductPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Produkt ${widget._newProduct ? "erstellen" : "bearbeiten"}"),
+        title: new Text(
+            "Produkt ${widget._newProduct ? "erstellen" : "bearbeiten"}"),
       ),
       body: new Material(
-        child: _product != null ? new Container(
-          child: new ListView(
-            children: <Widget>[
-              new TextField(
-                controller: new TextEditingController(text: _product.name),
+        child: _product != null
+            ? new Container(
+                color: Colors.black12,
+                padding: new EdgeInsets.all(6.0),
+                child: new Column(children: <Widget>[
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: new TextField(
+                        decoration: InputDecoration(labelText: "Titel"),
+                        style: TextStyle(
+                            fontSize: 25.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold),
+                        controller:
+                            new TextEditingController(text: _product.name),
+                      ),
+                    ),
+                  ),
+                  new PhotoComposer(
+                    _product.imageDatas,
+                    onImageRemoved: (ImageData image) {
+                      print(image.name);
+                    },
+                  ),
+                  Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: new TextField(
+                        decoration: InputDecoration(labelText: "Beschreibung"),
+                        style: TextStyle(
+                          fontSize: 18.0,
+                          color: Colors.black,
+                        ),
+                        controller: new TextEditingController(
+                            text: _product.description),
+                      ),
+                    ),
+                  ),
+                  Card(
+                      child: Container(
+                    padding: new EdgeInsets.all(8.0),
+                    child: Row(
+                      children: <Widget>[
+                        Chip(
+                          label: Text("Nordwind"),
+                        ),
+                      ],
+                    ),
+                  )),
+                ]))
+            : new Center(
+                child: new CircularProgressIndicator(),
               ),
-              new TextField(
-                controller: new TextEditingController(text: _product.description),
-              ),
-//              new PhotoComposer()
-              new PhotoComposer(_product.imageDatas, onImageRemoved: (ImageData image) {print(image.name);},),
-
-            ],
-          )
-        ) : new Center(child: new CircularProgressIndicator(),),
 //        child: new PhotoComposer(),
       ),
       floatingActionButton: new FloatingActionButton(
@@ -49,41 +87,38 @@ class _CreateProductPageState extends State<CreateProductPage> {
     );
   }
 
-  void _showAlertDialog(){
-    showDialog(context: context, builder: (builder) {
-      return new AlertDialog(
-        content: new Text("Willst du das neue Produkt wirklich löschen?\nEs wurde nicht gespeichert."),
-        actions: <Widget>[
-          new FlatButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: new Text("Ja, Löschen!")
-          ),
-          new FlatButton(
-              onPressed: () => Navigator.pop(context),
-              child: new Text("Abbrechen")
-          )
-        ],
-      );
-    });
+  void _showAlertDialog() {
+    showDialog(
+        context: context,
+        builder: (builder) {
+          return new AlertDialog(
+            content: new Text(
+                "Willst du das neue Produkt wirklich löschen?\nEs wurde nicht gespeichert."),
+            actions: <Widget>[
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: new Text("Ja, Löschen!")),
+              new FlatButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: new Text("Abbrechen"))
+            ],
+          );
+        });
   }
 
   @override
   void initState() {
     super.initState();
-    if (widget._newProduct) {
+    Product.fromId(widget._id).then((Product product) {
+      if (widget._newProduct) {
+        product.id = null;
+      }
       setState(() {
-        _product = new Product();
+        _product = product;
       });
-    }
-    else {
-      Product.fromId(widget._id).then((product) {
-        setState(() {
-          _product = product;
-        });
-      });
-    }
+    });
   }
 }

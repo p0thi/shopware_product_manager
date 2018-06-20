@@ -1,6 +1,8 @@
-import 'dart:convert';
 import 'dart:async';
-import 'package:flutter_app/models/ImageData.dart';
+import 'dart:convert';
+
+import 'package:flutter_app/models/imageData.dart';
+import 'package:flutter_app/models/productCategory.dart';
 import 'package:flutter_app/util/Util.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +14,7 @@ class Product {
   DateTime _releaseDate;
   List<ImageData> _imageDatas;
   int _quantity;
+  List<ProductCategory> _categories;
 
   //JSON String constructor
 
@@ -22,26 +25,35 @@ class Product {
     result._name = map["data"]["name"].toString();
     result._description = map["data"]["description"].toString();
     result._quantity = map["data"]["mainDetail"]["inStock"];
+
+    result._categories = new List();
+    for (var category in map["data"]["categories"]) {
+      result._categories.add(ProductCategory(category["name"], category["id"]));
+    }
+
     result._imageDatas = new List();
     try {
-      for(var image in map["data"]["images"]) {
+      for (var image in map["data"]["images"]) {
         result._imageDatas.add(new ImageData(
           image["mediaId"].toString(),
           image["path"].toString(),
           image["extension"].toString(),
         ));
       }
-    } catch (e) {
-    }
-    result._releaseDate = DateTime.parse(map["data"]["mainDetail"]["releaseDate"]);
+    } catch (e) {}
+    result._releaseDate =
+        DateTime.parse(map["data"]["mainDetail"]["releaseDate"]);
     return result;
   }
 
   static Future<Product> fromId(int id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var result = await http.get("${Util.baseApiUrl}articles/$id", headers: Util.httpHeaders(prefs.getString("username"), prefs.getString("pass")))
+    var result = await http
+        .get("${Util.baseApiUrl}articles/$id",
+            headers: Util.httpHeaders(
+                prefs.getString("username"), prefs.getString("pass")))
         .then((response) {
-          print(response.body);
+      print(response.body);
       return Product.fromJson(response.body);
     });
     return result;
