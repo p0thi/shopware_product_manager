@@ -2,18 +2,20 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart';
 
-
 class Util {
   static Map<String, String> httpHeaders(String username, String pass) {
     return {
-      HttpHeaders.AUTHORIZATION: "Basic ${base64.encode(utf8.encode("$username:$pass"))}",
+      HttpHeaders.AUTHORIZATION:
+          "Basic ${base64.encode(utf8.encode("$username:$pass"))}",
     };
   }
+
   static final String shopUrl = "https://shop.dikapo.eu/";
   static final String baseApiUrl = "${shopUrl}api/";
 
@@ -25,7 +27,8 @@ class Util {
   }
 
   static Future<bool> checkCredentials(String username, String pass) async {
-    http.Response res = await http.get("${baseApiUrl}version", headers: httpHeaders(username, pass));
+    http.Response res = await http.get("${baseApiUrl}version",
+        headers: httpHeaders(username, pass));
     if (res.statusCode == 200) {
       return true;
     }
@@ -34,6 +37,8 @@ class Util {
 
   static List<int> cropImage(File file) {
     Image image = decodeImage(file.readAsBytesSync());
+    print("Image Orientation: ${image.exif.orientation}");
+    // TODO: rotate image
     int width = image.width;
     int height = image.height;
     print("height: $height");
@@ -41,9 +46,9 @@ class Util {
     int minDimension = min(width, height);
     int maxDimension = max(width, height);
     int startingPoint = ((maxDimension - minDimension) / 2).round();
-    Image thumbnail = copyCrop(image, startingPoint, 0, minDimension, minDimension);
+    Image thumbnail =
+        copyCrop(image, startingPoint, 0, minDimension, minDimension);
     print("returning");
     return encodePng(thumbnail);
   }
-
 }

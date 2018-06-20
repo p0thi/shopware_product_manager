@@ -1,7 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/imageData.dart';
 import 'package:flutter_app/models/product.dart';
-import 'package:flutter_app/widgets/components/PhotoComposer.dart';
+import 'package:flutter_app/widgets/components/activatableChip.dart';
+import 'package:flutter_app/widgets/components/photoComposer/PhotoComposer.dart';
+import 'package:flutter_app/widgets/components/steps/customStepper.dart';
 
 class CreateProductPage extends StatefulWidget {
   final int _id;
@@ -15,6 +19,8 @@ class CreateProductPage extends StatefulWidget {
 
 class _CreateProductPageState extends State<CreateProductPage> {
   Product _product;
+  int _currentStep = 0;
+  List<CustomStep> _steps;
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -25,64 +31,37 @@ class _CreateProductPageState extends State<CreateProductPage> {
       body: new Material(
         child: _product != null
             ? new Container(
-                color: Colors.black12,
                 padding: new EdgeInsets.all(6.0),
-                child: new Column(children: <Widget>[
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: new TextField(
-                        decoration: InputDecoration(labelText: "Titel"),
-                        style: TextStyle(
-                            fontSize: 25.0,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold),
-                        controller:
-                            new TextEditingController(text: _product.name),
-                      ),
-                    ),
-                  ),
-                  new PhotoComposer(
-                    _product.imageDatas,
-                    onImageRemoved: (ImageData image) {
-                      print(image.name);
+                child: CustomStepper(
+                    currentCustomStep: _currentStep,
+                    type: CustomStepperType.vertical,
+                    onCustomStepContinue: () {
+                      setState(() {
+                        _steps[_currentStep].isActive = false;
+                        _currentStep = min(_currentStep + 1, _steps.length - 1);
+                      });
                     },
-                  ),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: new TextField(
-                        decoration: InputDecoration(labelText: "Beschreibung"),
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          color: Colors.black,
-                        ),
-                        controller: new TextEditingController(
-                            text: _product.description),
-                      ),
-                    ),
-                  ),
-                  Card(
-                      child: Container(
-                    padding: new EdgeInsets.all(8.0),
-                    child: Row(
-                      children: <Widget>[
-                        Chip(
-                          label: Text("Nordwind"),
-                        ),
-                      ],
-                    ),
-                  )),
-                ]))
+                    onCustomStepCancel: () {
+                      setState(() {
+                        _currentStep = max(0, _currentStep - 1);
+                      });
+                    },
+                    onCustomStepTapped: (index) {
+                      setState(() {
+                        _currentStep = index;
+                      });
+                    },
+                    steps: _steps))
             : new Center(
                 child: new CircularProgressIndicator(),
               ),
 //        child: new PhotoComposer(),
       ),
       floatingActionButton: new FloatingActionButton(
+        heroTag: "saveproduct",
         onPressed: _showAlertDialog,
         tooltip: 'Delete',
-        child: new Icon(Icons.delete),
+        child: new Icon(Icons.save),
       ),
     );
   }
@@ -118,6 +97,72 @@ class _CreateProductPageState extends State<CreateProductPage> {
       }
       setState(() {
         _product = product;
+
+        _steps = <CustomStep>[
+          CustomStep(
+            title: Text("Titel"),
+            content: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: new TextField(
+                  style: TextStyle(
+                      fontSize: 22.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
+                  controller: new TextEditingController(text: _product.name),
+                ),
+              ),
+            ),
+          ),
+          CustomStep(
+            title: Text("Bilder"),
+            content: new PhotoComposer(
+              _product.imageDatas,
+              onImageRemoved: (ImageData image) {
+                print(image.name);
+              },
+            ),
+          ),
+          CustomStep(
+            title: Text("Beschreibung"),
+            content: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: new TextField(
+                  maxLines: null,
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    color: Colors.black,
+                  ),
+                  controller:
+                      new TextEditingController(text: _product.description),
+                ),
+              ),
+            ),
+          ),
+          CustomStep(
+            title: Text("Modell"),
+            content: Card(
+                child: Container(
+              padding: new EdgeInsets.all(8.0),
+              child: Row(
+                children: <Widget>[
+                  new ActivatableChip(
+                    label: Text("Nordwind"),
+                  ),
+                ],
+              ),
+            )),
+          ),
+          CustomStep(
+            title: Text("Title 5"),
+            content: Text("Content 5"),
+          ),
+          CustomStep(
+            title: Text("Title 6"),
+            content: Text("Content 6"),
+          ),
+        ];
       });
     });
   }

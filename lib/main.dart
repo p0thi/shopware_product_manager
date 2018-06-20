@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/util/AppRouter.dart';
-import 'package:flutter_app/util/Util.dart';
 import 'package:flutter_app/widgets/pages/AuthPage.dart';
 import 'package:flutter_app/widgets/pages/MyHomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +10,7 @@ void main() {
 //  SharedPreferences.setMockInitialValues({});
   runApp(new MyApp());
 }
+
 class MyApp extends StatefulWidget {
   MyApp();
 
@@ -19,7 +19,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   Widget _screen;
 
   @override
@@ -35,14 +34,16 @@ class _MyAppState extends State<MyApp> {
         // "hot reload" (press "r" in the console where you ran "flutter run",
         // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
         // counter didn't reset back to zero; the application is not restarted.
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.green,
       ),
-      home: _screen == null ? new Container(
-        color: Colors.white,
-        child: new Center(
-          child: new CircularProgressIndicator(),
-        ),
-      ) : _screen,
+      home: _screen == null
+          ? new Container(
+              color: Colors.white,
+              child: new Center(
+                child: new CircularProgressIndicator(),
+              ),
+            )
+          : _screen,
     );
   }
 
@@ -60,12 +61,9 @@ class _MyAppState extends State<MyApp> {
     String username = prefs.getString("username") ?? null;
     String pass = prefs.get("pass") ?? null;
 
-    print("#######################################");
-    print(username);
-
     setState(() {
-      if(username == null || pass == null) {
-        _screen = new AuthPage((){
+      if (username == null || pass == null) {
+        _screen = new AuthPage(() {
           setState(() {
             updateScreen();
           });
@@ -76,5 +74,3 @@ class _MyAppState extends State<MyApp> {
     });
   }
 }
-
-

@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/imageData.dart';
 import 'package:flutter_app/models/product.dart';
-import 'package:flutter_app/util/AppRouter.dart';
 import 'package:flutter_app/util/Util.dart';
 import 'package:flutter_app/widgets/components/ProductPreview.dart';
+import 'package:flutter_app/widgets/pages/ImageViewer.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -79,9 +79,14 @@ class _MyHomePageState extends State<MyHomePage> {
         children: getProductWidgets(),
       ),
       floatingActionButton: new FloatingActionButton(
-        onPressed: () => new AppRouter().router().navigateTo(
-            context, "/product/33",
-            transition: TransitionType.native),
+        heroTag: "homepage",
+        onPressed: () {
+          Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      new ImageViewer(new ImageData("34", "DSCF6049", "jpg"))));
+        },
         tooltip: 'Increment',
         child: new Icon(Icons.add),
       ),

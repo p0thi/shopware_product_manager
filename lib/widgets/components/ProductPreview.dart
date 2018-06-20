@@ -52,10 +52,8 @@ class _ProductPreviewState extends State<ProductPreview> {
               "${widget._product.releaseDate.year}"),
         ],
       ),
-      leading: CircleAvatar(
-        radius: 40.0,
-        backgroundImage: NetworkImage(_imageUrl),
-      ),
+      leading:
+          CircleAvatar(radius: 40.0, backgroundImage: NetworkImage(_imageUrl)),
       contentPadding:
           new EdgeInsets.only(top: 15.0, right: 8.0, bottom: 15.0, left: 8.0),
       trailing: PopupMenuButton<_Choice>(
