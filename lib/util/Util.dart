@@ -5,8 +5,9 @@ import 'dart:math';
 
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:image/image.dart';
+import 'package:image/image.dart' as dartImage;
 
 class Util {
   static Map<String, String> httpHeaders(String username, String pass) {
@@ -35,9 +36,18 @@ class Util {
     return false;
   }
 
+  static double getWidthPercentage(BuildContext context, double percent) {
+    double width = 400.0;
+    try {
+      width = MediaQuery.of(context).size.width;
+    } catch (e) {}
+    return width * (percent / 100);
+  }
+
   static List<int> cropImage(File file) {
-    Image image = decodeImage(file.readAsBytesSync());
+    dartImage.Image image = dartImage.decodeImage(file.readAsBytesSync());
     print("Image Orientation: ${image.exif.orientation}");
+    if (image.exif.orientation != null) {}
     // TODO: rotate image
     int width = image.width;
     int height = image.height;
@@ -46,9 +56,13 @@ class Util {
     int minDimension = min(width, height);
     int maxDimension = max(width, height);
     int startingPoint = ((maxDimension - minDimension) / 2).round();
-    Image thumbnail =
-        copyCrop(image, startingPoint, 0, minDimension, minDimension);
+    dartImage.Image thumbnail =
+        dartImage.copyCrop(image, startingPoint, 0, minDimension, minDimension);
     print("returning");
-    return encodePng(thumbnail);
+    print(thumbnail.exif.orientation);
+//    thumbnail.
+
+//    return dartImage.encodePng(thumbnail).;
+    return dartImage.encodePng(thumbnail);
   }
 }

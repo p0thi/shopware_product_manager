@@ -2,11 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/imageData.dart';
 import 'package:flutter_app/models/product.dart';
 import 'package:flutter_app/util/Util.dart';
 import 'package:flutter_app/widgets/components/ProductPreview.dart';
-import 'package:flutter_app/widgets/pages/ImageViewer.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,13 +18,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Product> _products = new List<Product>();
+  List<Product> _products;
   bool _stillLoading = false;
 
   @override
   initState() {
     super.initState();
-    _stillLoading = true;
+    fetchProducts();
+  }
+
+  void fetchProducts() {
+    setState(() {
+      _stillLoading = true;
+      _products = new List<Product>();
+    });
     SharedPreferences.getInstance().then((prefs) async {
       bool isAuthenticated = await Util.checkCredentials(
           prefs.getString("username"), prefs.getString("pass"));
@@ -38,7 +43,6 @@ class _MyHomePageState extends State<MyHomePage> {
           .then((response) async {
         print(response.body);
         Map<String, dynamic> parsedRequest = json.decode(response.body);
-        List<Product> tmp = new List();
         for (var i = 0; i < parsedRequest["data"].length; i++) {
           await Product.fromId(parsedRequest["data"][i]["id"]).then((product) {
             setState(() {
@@ -64,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
       result.add(new ProductPreview(product));
     }
     if (_stillLoading) {
-      result.add(Center(child: CircularProgressIndicator()));
+      result.add(ProductPreviewPlaceholder());
     }
     return result;
   }
@@ -81,14 +85,10 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: new FloatingActionButton(
         heroTag: "homepage",
         onPressed: () {
-          Navigator.push(
-              context,
-              new MaterialPageRoute(
-                  builder: (BuildContext context) =>
-                      new ImageViewer(new ImageData("34", "DSCF6049", "jpg"))));
+          fetchProducts();
         },
         tooltip: 'Increment',
-        child: new Icon(Icons.add),
+        child: new Icon(Icons.refresh),
       ),
     );
   }

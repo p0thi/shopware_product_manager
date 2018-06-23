@@ -1,11 +1,16 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/imageData.dart';
 import 'package:flutter_app/models/product.dart';
+import 'package:flutter_app/util/Util.dart';
 import 'package:flutter_app/widgets/components/activatableChip.dart';
-import 'package:flutter_app/widgets/components/photoComposer/PhotoComposer.dart';
+import 'package:flutter_app/widgets/components/photoComposer/photoComposer.dart';
+import 'package:flutter_app/widgets/components/priceSelector.dart';
 import 'package:flutter_app/widgets/components/steps/customStepper.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateProductPage extends StatefulWidget {
   final int _id;
@@ -19,6 +24,9 @@ class CreateProductPage extends StatefulWidget {
 
 class _CreateProductPageState extends State<CreateProductPage> {
   Product _product;
+  TextEditingController _titleController = new TextEditingController();
+  TextEditingController _descriptionController = new TextEditingController();
+  PriceSelector _priceSelector;
   int _currentStep = 0;
   List<CustomStep> _steps;
   @override
@@ -59,33 +67,58 @@ class _CreateProductPageState extends State<CreateProductPage> {
       ),
       floatingActionButton: new FloatingActionButton(
         heroTag: "saveproduct",
-        onPressed: _showAlertDialog,
+        onPressed: safeProduct,
         tooltip: 'Delete',
         child: new Icon(Icons.save),
       ),
     );
   }
 
-  void _showAlertDialog() {
-    showDialog(
-        context: context,
-        builder: (builder) {
-          return new AlertDialog(
-            content: new Text(
-                "Willst du das neue Produkt wirklich löschen?\nEs wurde nicht gespeichert."),
-            actions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                  child: new Text("Ja, Löschen!")),
-              new FlatButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: new Text("Abbrechen"))
-            ],
-          );
-        });
+  void safeProduct() {
+    List<dynamic> shopwareImages = new List();
+    for (ImageData imageData in _product.imageDatas) {
+      shopwareImages.add(imageData.getShopwareObject(_titleController.text));
+    }
+    String articleBody = json.encode({
+      "name": _titleController.text,
+      "descriptionLong": _descriptionController.text,
+      "taxId": 1,
+      "active": true,
+      "images": shopwareImages,
+      "categories": [
+        {"id": 20}
+      ],
+      "mainDetail": {
+        "number": "${DateTime.now().hashCode}",
+        "inStock": 1,
+        "lastStock": true,
+        "active": true,
+        "releaseDate": DateTime.now().toIso8601String(),
+        "prices": [
+          {
+            "customerGroupKey": "EK",
+            "price": _priceSelector.price,
+            "pseudoPrice": _priceSelector.hasFake
+                ? _priceSelector.fakePrice
+                : _priceSelector.price,
+          }
+        ]
+      },
+      "supplierId": 4
+    });
+
+    SharedPreferences.getInstance().then((prefs) {
+      http
+          .post("${Util.baseApiUrl}articles",
+              headers:
+                  Util.httpHeaders(prefs.get("username"), prefs.get("pass")),
+              body: articleBody)
+          .then(
+        (response) {
+          print(response.body);
+        },
+      );
+    });
   }
 
   @override
@@ -98,6 +131,11 @@ class _CreateProductPageState extends State<CreateProductPage> {
       setState(() {
         _product = product;
 
+        _titleController.text = _product.name;
+        _descriptionController.text = _product.description;
+        _priceSelector =
+            new PriceSelector(_product.price, _product.fakePrice, true);
+
         _steps = <CustomStep>[
           CustomStep(
             title: Text("Titel"),
@@ -109,7 +147,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                       fontSize: 22.0,
                       color: Colors.black,
                       fontWeight: FontWeight.bold),
-                  controller: new TextEditingController(text: _product.name),
+                  controller: _titleController,
                 ),
               ),
             ),
@@ -118,9 +156,6 @@ class _CreateProductPageState extends State<CreateProductPage> {
             title: Text("Bilder"),
             content: new PhotoComposer(
               _product.imageDatas,
-              onImageRemoved: (ImageData image) {
-                print(image.name);
-              },
             ),
           ),
           CustomStep(
@@ -134,8 +169,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
                     fontSize: 18.0,
                     color: Colors.black,
                   ),
-                  controller:
-                      new TextEditingController(text: _product.description),
+                  controller: _descriptionController,
+                  autocorrect: true,
                 ),
               ),
             ),
@@ -155,8 +190,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
             )),
           ),
           CustomStep(
-            title: Text("Title 5"),
-            content: Text("Content 5"),
+            title: Text("Preis"),
+            content: _priceSelector,
           ),
           CustomStep(
             title: Text("Title 6"),

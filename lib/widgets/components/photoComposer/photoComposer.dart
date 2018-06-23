@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/imageData.dart';
@@ -9,11 +9,8 @@ import 'package:image_picker/image_picker.dart';
 
 class PhotoComposer extends StatefulWidget {
   List<ImageData> _imageDatas;
-  Function _onImageRemoved;
 
-  PhotoComposer(this._imageDatas, {Function onImageRemoved(ImageData image)}) {
-    _onImageRemoved = onImageRemoved;
-  }
+  PhotoComposer(this._imageDatas);
 
   @override
   _PhotoComposerState createState() => new _PhotoComposerState();
@@ -52,31 +49,52 @@ class _PhotoComposerState extends State<PhotoComposer> {
         icon: new Icon(
           Icons.add_a_photo,
           color: Colors.black26,
-          size: 45.0,
+          size: Util.getWidthPercentage(context, 10.0),
         ),
-        onPressed: () async {
+        onPressed: () {
+          List<Widget> temp = List<Widget>.from(_items);
+          temp.insert(
+              temp.length - 1,
+              Container(
+                width: 200.0,
+                height: 200.0,
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ));
           setState(() {
-            _items.add(Container(
-              width: 200.0,
-              height: 200.0,
-              child: Card(
-                child: CircularProgressIndicator(),
-              ),
-            ));
+            _items = temp;
           });
-          File file = await ImagePicker.pickImage(
-              source: ImageSource.camera, maxWidth: 1000.0, maxHeight: 1000.0);
-          Image image = new Image.memory(
-            Util.cropImage(file),
-            fit: BoxFit.cover,
-          );
-          setState(() {
-            widget._imageDatas.add(new ImageData.withImage(image));
-            _items = generateItems();
+          ImagePicker
+              .pickImage(
+                  source: ImageSource.camera,
+                  maxWidth: 1000.0,
+                  maxHeight: 1000.0)
+              .then((file) {
+            if (file == null) {
+              setState(() {
+                _items = generateItems();
+              });
+              return;
+            }
+            Image image = new Image.file(file, fit: BoxFit.cover);
+//          Image image = Image.memory(
+//            Util.cropImage(file),
+//            fit: BoxFit.cover,
+//          );
+
+            setState(() {
+              widget._imageDatas.add(new ImageData.withImage(image, file));
+              _items = generateItems();
+            });
           });
         },
       ),
     ));
+    ReceivePort receivePort = new ReceivePort();
     return result;
   }
 

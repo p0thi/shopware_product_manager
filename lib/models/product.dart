@@ -15,6 +15,8 @@ class Product {
   List<ImageData> _imageDatas;
   int _quantity;
   List<ProductCategory> _categories;
+  double _price;
+  double _fakePrice;
 
   //JSON String constructor
 
@@ -25,6 +27,16 @@ class Product {
     result._name = map["data"]["name"].toString();
     result._description = map["data"]["description"].toString();
     result._quantity = map["data"]["mainDetail"]["inStock"];
+    result._quantity = map["data"]["mainDetail"]["inStock"];
+
+    for (var priceUnit in map["data"]["mainDetail"]["prices"]) {
+      if (priceUnit["customerGroupKey"] == "EK") {
+        result._price =
+            (priceUnit["price"] * 119).round() / 100; // 119 = 100 + 19% tax
+        result._fakePrice = (priceUnit["pseudoPrice"] * 119).round() / 100;
+        break;
+      }
+    }
 
     result._categories = new List();
     for (var category in map["data"]["categories"]) {
@@ -35,7 +47,7 @@ class Product {
     try {
       for (var image in map["data"]["images"]) {
         result._imageDatas.add(new ImageData(
-          image["mediaId"].toString(),
+          image["mediaId"],
           image["path"].toString(),
           image["extension"].toString(),
         ));
@@ -86,4 +98,10 @@ class Product {
   set id(String value) {
     _id = value;
   }
+
+  double get fakePrice => _fakePrice;
+
+  double get price => _price;
+
+  List<ProductCategory> get categories => _categories;
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/imageData.dart';
 import 'package:flutter_app/models/product.dart';
 import 'package:flutter_app/util/AppRouter.dart';
+import 'package:flutter_app/util/Util.dart';
 
 class ProductPreview extends StatefulWidget {
   Product _product;
@@ -53,19 +54,31 @@ class _ProductPreviewState extends State<ProductPreview> {
         ],
       ),
       leading:
-          CircleAvatar(radius: 40.0, backgroundImage: NetworkImage(_imageUrl)),
+//          CircleAvatar(radius: 40.0, backgroundImage: NetworkImage(_imageUrl)),
+          Container(
+        width: 80.0,
+        height: 80.0,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: NetworkImage(_imageUrl), fit: BoxFit.cover),
+            borderRadius: BorderRadius.all(Radius.circular(50.0)),
+            border: Border.all(
+                width: Util.getWidthPercentage(context, .7),
+                color: Colors.green)),
+      ),
       contentPadding:
           new EdgeInsets.only(top: 15.0, right: 8.0, bottom: 15.0, left: 8.0),
       trailing: PopupMenuButton<_Choice>(
-          onSelected: _select,
-          itemBuilder: (context) {
-            return _Choice.choices.map((choice) {
-              return PopupMenuItem<_Choice>(
-                value: choice,
-                child: Text(choice.name),
-              );
-            }).toList();
-          }),
+        onSelected: _select,
+        itemBuilder: (context) {
+          return _Choice.choices.map((choice) {
+            return PopupMenuItem<_Choice>(
+              value: choice,
+              child: Text(choice.name),
+            );
+          }).toList();
+        },
+      ),
     );
   }
 
@@ -97,4 +110,57 @@ class _Choice {
   int value;
 
   _Choice(this.name, this.value);
+}
+
+class ProductPreviewPlaceholder extends StatelessWidget {
+  Widget getTextPlaceholder(double height) {
+    return Container(
+      margin: EdgeInsets.all(3.0),
+      child: Material(
+        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+        color: Colors.grey[500],
+        child: Container(
+          height: height,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        Opacity(
+          opacity: .2,
+          child: ListTile(
+            title: Center(
+              child: getTextPlaceholder(17.5),
+            ),
+            subtitle: Column(
+              children: <Widget>[
+                getTextPlaceholder(12.5),
+                getTextPlaceholder(12.5)
+              ],
+            ),
+            leading: CircleAvatar(
+              radius: 40.0,
+              backgroundColor: Colors.grey[500],
+            ),
+            contentPadding: new EdgeInsets.only(
+                top: 15.0, right: 8.0, bottom: 15.0, left: 8.0),
+            trailing: PopupMenuButton<_Choice>(
+//          onSelected: _select,
+                itemBuilder: (context) {}),
+          ),
+        ),
+        Positioned.fill(
+          child: Center(
+              child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: CircularProgressIndicator(),
+          )),
+        ),
+      ],
+    );
+  }
 }

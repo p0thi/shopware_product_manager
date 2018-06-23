@@ -35,6 +35,7 @@ class _ImageViewerState extends State<ImageViewer> {
                   child: ZoomableImage(
                     _image.image,
                     backgroundColor: Colors.white70,
+                    maxScale: 3.0,
                   ),
                 ),
               ),
