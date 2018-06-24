@@ -36,7 +36,7 @@ class Util {
     return false;
   }
 
-  static double getWidthPercentage(BuildContext context, double percent) {
+  static double relSize(BuildContext context, double percent) {
     double width = 400.0;
     try {
       width = MediaQuery.of(context).size.width;
@@ -44,25 +44,23 @@ class Util {
     return width * (percent / 100);
   }
 
-  static List<int> cropImage(File file) {
-    dartImage.Image image = dartImage.decodeImage(file.readAsBytesSync());
-    print("Image Orientation: ${image.exif.orientation}");
-    if (image.exif.orientation != null) {}
-    // TODO: rotate image
+  static List<int> cropImage(String filePath) {
+    dartImage.Image image =
+        dartImage.decodeImage(File(filePath).readAsBytesSync());
     int width = image.width;
     int height = image.height;
-    print("height: $height");
-    print("width: $width");
     int minDimension = min(width, height);
     int maxDimension = max(width, height);
+    print(maxDimension);
+    print(minDimension);
     int startingPoint = ((maxDimension - minDimension) / 2).round();
+
     dartImage.Image thumbnail =
         dartImage.copyCrop(image, startingPoint, 0, minDimension, minDimension);
-    print("returning");
-    print(thumbnail.exif.orientation);
-//    thumbnail.
+    print(thumbnail.width);
+    print(thumbnail.height);
 
-//    return dartImage.encodePng(thumbnail).;
-    return dartImage.encodePng(thumbnail);
+    return dartImage.encodeJpg(thumbnail);
+//    return Image.memory(dartImage.encodeJpg(thumbnail, quality: 100));
   }
 }

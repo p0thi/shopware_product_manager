@@ -40,23 +40,19 @@ class _MyHomePageState extends State<MyHomePage> {
           .get("${Util.baseApiUrl}articles",
               headers: Util.httpHeaders(
                   prefs.getString("username"), prefs.getString("pass")))
-          .then((response) async {
+          .then((response) {
         print(response.body);
         Map<String, dynamic> parsedRequest = json.decode(response.body);
         for (var i = 0; i < parsedRequest["data"].length; i++) {
-          await Product.fromId(parsedRequest["data"][i]["id"]).then((product) {
+          Product.fromId(parsedRequest["data"][i]["id"]).then((product) {
             setState(() {
               _products.add(product);
+              if (_products.length == parsedRequest["data"].length) {
+                _stillLoading = false;
+              }
             });
           });
         }
-/*
-        for (var i = 0; i < 30; i++) {
-          tmp.add(Product.fromJson('{"data":{"id":999,"name":"Ich mag Züge","description":"Züge ich mag","mainDetail":{"inStock":${new Random().nextInt(2)},"releaseDate": "2018-03-17T00:00:00+0100"}},"success":true}'));
-        }*/
-        setState(() {
-          _stillLoading = false;
-        });
       });
     });
   }
@@ -65,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Widget> result = new List();
     if (_products == null) return result;
     for (Product product in _products) {
-      result.add(new ProductPreview(product));
+      result.add(new ProductPreview(product, onProductDeleted: fetchProducts));
     }
     if (_stillLoading) {
       result.add(ProductPreviewPlaceholder());

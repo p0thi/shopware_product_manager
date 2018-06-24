@@ -1,5 +1,6 @@
-import 'dart:isolate';
+import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/imageData.dart';
 import 'package:flutter_app/util/Util.dart';
@@ -18,6 +19,7 @@ class PhotoComposer extends StatefulWidget {
 
 class _PhotoComposerState extends State<PhotoComposer> {
   List<Widget> _items;
+  int _currentProcessingPicturesCount = 0;
 
   @override
   void initState() {
@@ -36,10 +38,22 @@ class _PhotoComposerState extends State<PhotoComposer> {
         });
       }));
     }
-    result.add(new Container(
-      margin: new EdgeInsets.all(10.0),
-      decoration: new BoxDecoration(
-        border: new Border.all(
+    for (var i = 0; i < _currentProcessingPicturesCount; i++) {
+      result.add(Container(
+        width: 200.0,
+        height: 200.0,
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(18.0),
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      ));
+    }
+    Container tmpContainer = Container(
+      margin: EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+        border: Border.all(
           color: Colors.black26,
           width: 3.0,
         ),
@@ -49,52 +63,54 @@ class _PhotoComposerState extends State<PhotoComposer> {
         icon: new Icon(
           Icons.add_a_photo,
           color: Colors.black26,
-          size: Util.getWidthPercentage(context, 10.0),
+          size: Util.relSize(context, 10.0),
         ),
         onPressed: () {
-          List<Widget> temp = List<Widget>.from(_items);
-          temp.insert(
-              temp.length - 1,
-              Container(
-                width: 200.0,
-                height: 200.0,
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(18.0),
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-              ));
           setState(() {
-            _items = temp;
+            _currentProcessingPicturesCount++;
+            _items = generateItems();
           });
           ImagePicker
               .pickImage(
                   source: ImageSource.camera,
-                  maxWidth: 1000.0,
-                  maxHeight: 1000.0)
+                  maxWidth: 2500.0,
+                  maxHeight: 2500.0)
               .then((file) {
             if (file == null) {
               setState(() {
+                _currentProcessingPicturesCount =
+                    max(_currentProcessingPicturesCount - 1, 0);
                 _items = generateItems();
+                Scaffold.of(context).showSnackBar(SnackBar(
+                    backgroundColor: Colors.red,
+                    duration: Duration(seconds: 5),
+                    content: Text("Es wurde kein Bild aufgenommen...")));
               });
               return;
             }
-            Image image = new Image.file(file, fit: BoxFit.cover);
+            Scaffold.of(context).showSnackBar(SnackBar(
+                duration: Duration(seconds: 5),
+                content: Text("Das Bild wird verarbeitet...")));
+
+            compute(Util.cropImage, file.path).then((data) {
+              setState(() {
+                _currentProcessingPicturesCount =
+                    max(_currentProcessingPicturesCount - 1, 0);
+                widget._imageDatas.add(
+                    new ImageData.withImage(Image.memory(data) /*, file*/));
+                _items = generateItems();
+              });
+            });
+
 //          Image image = Image.memory(
 //            Util.cropImage(file),
 //            fit: BoxFit.cover,
 //          );
-
-            setState(() {
-              widget._imageDatas.add(new ImageData.withImage(image, file));
-              _items = generateItems();
-            });
           });
         },
       ),
-    ));
-    ReceivePort receivePort = new ReceivePort();
+    );
+    result.add(tmpContainer);
     return result;
   }
 

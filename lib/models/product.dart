@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Product {
   String _id;
+  String _artNr;
   String _name;
   String _description;
   DateTime _releaseDate;
@@ -27,7 +28,7 @@ class Product {
     result._name = map["data"]["name"].toString();
     result._description = map["data"]["description"].toString();
     result._quantity = map["data"]["mainDetail"]["inStock"];
-    result._quantity = map["data"]["mainDetail"]["inStock"];
+    result._artNr = map["data"]["mainDetail"]["number"];
 
     for (var priceUnit in map["data"]["mainDetail"]["prices"]) {
       if (priceUnit["customerGroupKey"] == "EK") {
@@ -40,7 +41,17 @@ class Product {
 
     result._categories = new List();
     for (var category in map["data"]["categories"]) {
-      result._categories.add(ProductCategory(category["name"], category["id"]));
+      result._categories.add(ProductCategory(
+          category["name"],
+          category["id"],
+          category["active"],
+          category["parentId"],
+          category["childrenCount"] != null
+              ? int.parse(category["childrenCount"])
+              : null,
+          category["articleCount"] != null
+              ? int.parse(category["articleCount"])
+              : null));
     }
 
     result._imageDatas = new List();
@@ -98,6 +109,8 @@ class Product {
   set id(String value) {
     _id = value;
   }
+
+  String get artNr => _artNr;
 
   double get fakePrice => _fakePrice;
 

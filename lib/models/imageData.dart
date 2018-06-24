@@ -45,8 +45,8 @@ class ImageData {
     _thumbnail = thumbnail;
   }
 
-  ImageData.withImage(Image image, File file) {
-    _imageFile = file;
+  ImageData.withImage(Image image /*, File file*/) {
+//    _imageFile = file;
     _image = image;
   }
 

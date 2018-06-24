@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/imageData.dart';
 import 'package:flutter_app/models/product.dart';
 import 'package:flutter_app/util/Util.dart';
-import 'package:flutter_app/widgets/components/activatableChip.dart';
+import 'package:flutter_app/widgets/components/categoryTreeView.dart';
 import 'package:flutter_app/widgets/components/photoComposer/photoComposer.dart';
 import 'package:flutter_app/widgets/components/priceSelector.dart';
 import 'package:flutter_app/widgets/components/steps/customStepper.dart';
@@ -27,6 +27,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
   TextEditingController _titleController = new TextEditingController();
   TextEditingController _descriptionController = new TextEditingController();
   PriceSelector _priceSelector;
+  CategoryTreeView _categoryTreeView;
   int _currentStep = 0;
   List<CustomStep> _steps;
   @override
@@ -85,9 +86,9 @@ class _CreateProductPageState extends State<CreateProductPage> {
       "taxId": 1,
       "active": true,
       "images": shopwareImages,
-      "categories": [
-        {"id": 20}
-      ],
+      "categories": List.of(_categoryTreeView.activeCategories.map((category) {
+        return {"id": category.id};
+      })),
       "mainDetail": {
         "number": "${DateTime.now().hashCode}",
         "inStock": 1,
@@ -116,6 +117,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
           .then(
         (response) {
           print(response.body);
+          Navigator.of(context).pop();
         },
       );
     });
@@ -130,7 +132,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
       }
       setState(() {
         _product = product;
-
+        _categoryTreeView = CategoryTreeView(_product.categories);
         _titleController.text = _product.name;
         _descriptionController.text = _product.description;
         _priceSelector =
@@ -177,25 +179,11 @@ class _CreateProductPageState extends State<CreateProductPage> {
           ),
           CustomStep(
             title: Text("Modell"),
-            content: Card(
-                child: Container(
-              padding: new EdgeInsets.all(8.0),
-              child: Row(
-                children: <Widget>[
-                  new ActivatableChip(
-                    label: Text("Nordwind"),
-                  ),
-                ],
-              ),
-            )),
+            content: _categoryTreeView,
           ),
           CustomStep(
             title: Text("Preis"),
             content: _priceSelector,
-          ),
-          CustomStep(
-            title: Text("Title 6"),
-            content: Text("Content 6"),
           ),
         ];
       });

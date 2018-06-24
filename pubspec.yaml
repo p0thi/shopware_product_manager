@@ -15,6 +15,7 @@ dependencies:
   image:
   shared_preferences: "0.4.1"
   zoomable_image: "1.2.0"
+  crypto: any
 
 dev_dependencies:
   flutter_test:

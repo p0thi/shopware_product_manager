@@ -4,11 +4,16 @@ import 'package:flutter_app/models/imageData.dart';
 import 'package:flutter_app/models/product.dart';
 import 'package:flutter_app/util/AppRouter.dart';
 import 'package:flutter_app/util/Util.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductPreview extends StatefulWidget {
   Product _product;
+  VoidCallback _onProductDeleted;
 
-  ProductPreview(this._product);
+  ProductPreview(this._product, {@required VoidCallback onProductDeleted}) {
+    this._onProductDeleted = onProductDeleted;
+  }
 
   @override
   _ProductPreviewState createState() => new _ProductPreviewState();
@@ -63,11 +68,13 @@ class _ProductPreviewState extends State<ProductPreview> {
                 image: NetworkImage(_imageUrl), fit: BoxFit.cover),
             borderRadius: BorderRadius.all(Radius.circular(50.0)),
             border: Border.all(
-                width: Util.getWidthPercentage(context, .7),
-                color: Colors.green)),
+                width: Util.relSize(context, .7), color: Colors.green)),
       ),
-      contentPadding:
-          new EdgeInsets.only(top: 15.0, right: 8.0, bottom: 15.0, left: 8.0),
+      contentPadding: new EdgeInsets.only(
+          top: Util.relSize(context, 3.3),
+          right: Util.relSize(context, 1.7),
+          bottom: Util.relSize(context, 3.3),
+          left: Util.relSize(context, 1.7)),
       trailing: PopupMenuButton<_Choice>(
         onSelected: _select,
         itemBuilder: (context) {
@@ -94,7 +101,50 @@ class _ProductPreviewState extends State<ProductPreview> {
             context, "/duplicate-product/${widget._product.id}",
             transition: TransitionType.native);
         break;
-      case 2: // TODO delete product
+      case 2:
+        SharedPreferences.getInstance().then((prefs) {
+          showDialog(
+              context: context,
+//              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text(
+                      "Willst den Artikel \"${widget._product.name}\" wirklich löschen? :)"),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text(
+                            "Das Löschen kann nicht rückgängig gemacht werden!")
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    RaisedButton(
+                      child: Text("Ja, löschen!"),
+                      onPressed: () {
+                        http
+                            .delete(
+                                "${Util.baseApiUrl}articles/${widget._product.id}",
+                                headers: Util.httpHeaders(
+                                    prefs.get("username"), prefs.get("pass")))
+                            .then((response) {
+                          print(response.body);
+                          widget._onProductDeleted();
+                        });
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    RaisedButton(
+                      child: Text("Nein, nicht löschen"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              });
+        });
+
         break;
     }
   }
@@ -102,7 +152,7 @@ class _ProductPreviewState extends State<ProductPreview> {
 
 class _Choice {
   static List<_Choice> choices = <_Choice>[
-    _Choice("Bearbeiten", 0), // edit-product
+//    _Choice("Bearbeiten", 0), // edit-product TODO edit product
     _Choice("Duplizieren", 1), // duplicate-product
     _Choice("Löschen", 2),
   ];
@@ -117,7 +167,7 @@ class ProductPreviewPlaceholder extends StatelessWidget {
     return Container(
       margin: EdgeInsets.all(3.0),
       child: Material(
-        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
         color: Colors.grey[500],
         child: Container(
           height: height,

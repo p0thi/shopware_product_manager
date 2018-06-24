@@ -29,7 +29,10 @@ class _PriceSelectorState extends State<PriceSelector> {
               padding: EdgeInsets.all(8.0),
               child: Column(
                 children: <Widget>[
-                  Text("Vorschau"),
+                  Text(
+                    "Vorschau",
+                    style: TextStyle(fontSize: Util.relSize(context, 4.0)),
+                  ),
                   Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -37,13 +40,18 @@ class _PriceSelectorState extends State<PriceSelector> {
                       Text("Preis: "),
                       Text(
                         "${widget._price.toStringAsFixed(2)} €",
-                        style: TextStyle(color: Colors.green),
+                        style: TextStyle(
+                            color: Colors.green,
+                            fontSize: Util.relSize(context, 3.8),
+                            fontWeight: FontWeight.bold),
                       ),
                       widget._hasFake
                           ? Text(
                               "${widget._fakePrice.toStringAsFixed(2)} €",
                               style: TextStyle(
                                   color: Colors.red,
+                                  fontSize: Util.relSize(context, 3.8),
+                                  fontWeight: FontWeight.bold,
                                   decoration: TextDecoration.lineThrough),
                             )
                           : Container()
@@ -56,22 +64,25 @@ class _PriceSelectorState extends State<PriceSelector> {
           Card(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: <Widget>[
-                  Text(
-                    "Soll ein Fake-Preis\nangezeigt werden?",
-                    style: TextStyle(
-                        fontSize: Util.getWidthPercentage(context, 3.5)),
-                  ),
-                  Switch(
-                    value: widget._hasFake,
-                    onChanged: (bool value) {
-                      setState(() {
-                        widget._hasFake = value;
-                      });
-                    },
-                  ),
-                ],
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "Soll ein Fake-Preis angezeigt werden?",
+                      softWrap: true,
+                      style: TextStyle(fontSize: Util.relSize(context, 3.5)),
+                    ),
+                    Switch(
+                      value: widget._hasFake,
+                      onChanged: (bool value) {
+                        setState(() {
+                          widget._hasFake = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
