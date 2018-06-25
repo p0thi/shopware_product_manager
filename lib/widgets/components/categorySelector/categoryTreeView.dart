@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/productCategory.dart';
 import 'package:flutter_app/util/Util.dart';
-import 'package:flutter_app/widgets/components/activatableChip.dart';
+import 'package:flutter_app/widgets/components/categorySelector/activatableChip.dart';
 
 class CategoryTreeView extends StatefulWidget {
   List<ProductCategory> _activeCategories;
@@ -50,34 +50,40 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
           ),
         ),
         Card(
-          child: Container(
-            child: _allCategories != null
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: List.of(ProductCategory
-                        .getRealRoots(_allCategories)
-                        .map((category) => CategoryItem(
-                                category,
-                                _allCategories,
-                                widget._activeCategories, (id, isActive) {
-                              ProductCategory myCategory =
-                                  ProductCategory.getById(id, _allCategories);
-                              setState(() {
-                                if (isActive /*&&
-                                  !widget._activeCategories.contains(category)*/
-                                    ) {
-                                  widget._activeCategories.add(myCategory);
-                                }
-                                if (!isActive) {
-                                  ProductCategory.removeById(
-                                      id, widget._activeCategories);
+          child: Column(
+            children: <Widget>[
+              Text("Hier die Kategorie/en auswählen:"),
+              Divider(),
+              Container(
+                child: _allCategories != null
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: List.of(ProductCategory
+                            .getRealRoots(_allCategories)
+                            .map((category) => CategoryItem(
+                                    category,
+                                    _allCategories,
+                                    widget._activeCategories, (id, isActive) {
+                                  ProductCategory myCategory = ProductCategory
+                                      .getById(id, _allCategories);
+                                  setState(() {
+                                    if (isActive /*&&
+                                      !widget._activeCategories.contains(category)*/
+                                        ) {
+                                      widget._activeCategories.add(myCategory);
+                                    }
+                                    if (!isActive) {
+                                      ProductCategory.removeById(
+                                          id, widget._activeCategories);
 //                              widget._activeCategories.remove(myCategory);
-                                }
-                                print(widget._activeCategories.length);
-                              });
-                            }))),
-                  )
-                : Placeholder(),
+                                    }
+                                    print(widget._activeCategories.length);
+                                  });
+                                }))),
+                      )
+                    : Placeholder(),
+              ),
+            ],
           ),
         ),
       ],
@@ -116,14 +122,6 @@ class _CategoryItemState extends State<CategoryItem> {
   bool _isExpanded = false;
   @override
   Widget build(BuildContext context) {
-    for (ProductCategory category in widget._selectedCategories) {
-      if (widget._category.isParentOf(widget._allCategories, category)) {
-        _highlight = true;
-        _isExpanded = true;
-        break;
-      }
-      print(category.name);
-    }
     Widget inner;
     if (widget._isLeaf) {
       inner = Container(
@@ -146,7 +144,12 @@ class _CategoryItemState extends State<CategoryItem> {
     } else {
       inner = Container(
         decoration: BoxDecoration(
-            border: Border(left: BorderSide(width: Util.relSize(context, .3)))),
+            border: Border(
+                left: BorderSide(width: Util.relSize(context, .3)),
+                bottom: _isExpanded
+                    ? BorderSide(
+                        width: Util.relSize(context, .3), color: Colors.grey)
+                    : BorderSide.none)),
         margin: EdgeInsets.all(Util.relSize(context, 3.0)),
         padding: EdgeInsets.only(left: Util.relSize(context, 2.0)),
         width: Util.relSize(context, 900.0),
@@ -158,6 +161,7 @@ class _CategoryItemState extends State<CategoryItem> {
                 setState(
                   () {
                     _isExpanded = !_isExpanded;
+                    print(_isExpanded);
                   },
                 );
               },
@@ -202,5 +206,18 @@ class _CategoryItemState extends State<CategoryItem> {
       padding: EdgeInsets.only(left: Util.relSize(context, 1.0)),
       child: inner,
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    for (ProductCategory category in widget._selectedCategories) {
+      if (widget._category.isParentOf(widget._allCategories, category)) {
+        _highlight = true;
+        _isExpanded = true;
+        break;
+      }
+      print(category.name);
+    }
   }
 }

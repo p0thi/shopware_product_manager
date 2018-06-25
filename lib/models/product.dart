@@ -65,7 +65,7 @@ class Product {
       }
     } catch (e) {}
     result._releaseDate =
-        DateTime.parse(map["data"]["mainDetail"]["releaseDate"]);
+        DateTime.parse(map["data"]["mainDetail"]["releaseDate"]).toLocal();
     return result;
   }
 

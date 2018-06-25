@@ -9,10 +9,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ProductPreview extends StatefulWidget {
   Product _product;
-  VoidCallback _onProductDeleted;
+  VoidCallback _onProductsChanged;
 
-  ProductPreview(this._product, {@required VoidCallback onProductDeleted}) {
-    this._onProductDeleted = onProductDeleted;
+  ProductPreview(this._product, {@required VoidCallback onProductsChanged}) {
+    this._onProductsChanged = onProductsChanged;
   }
 
   @override
@@ -52,7 +52,7 @@ class _ProductPreviewState extends State<ProductPreview> {
       subtitle: Column(
         children: <Widget>[
           new Text("Noch ${widget._product.quantity} verfügbar."),
-          new Text("Reingestellt am "
+          new Text("Veröffentlicht am "
               "${widget._product.releaseDate.day}."
               "${widget._product.releaseDate.month}."
               "${widget._product.releaseDate.year}"),
@@ -129,7 +129,7 @@ class _ProductPreviewState extends State<ProductPreview> {
                                     prefs.get("username"), prefs.get("pass")))
                             .then((response) {
                           print(response.body);
-                          widget._onProductDeleted();
+                          widget._onProductsChanged();
                         });
                         Navigator.of(context).pop();
                       },

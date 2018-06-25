@@ -20,6 +20,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<Product> _products;
   bool _stillLoading = false;
+  int _productCount;
 
   @override
   initState() {
@@ -43,10 +44,14 @@ class _MyHomePageState extends State<MyHomePage> {
           .then((response) {
         print(response.body);
         Map<String, dynamic> parsedRequest = json.decode(response.body);
+        setState(() {
+          _productCount = parsedRequest["data"].length;
+        });
         for (var i = 0; i < parsedRequest["data"].length; i++) {
           Product.fromId(parsedRequest["data"][i]["id"]).then((product) {
             setState(() {
               _products.add(product);
+              _productCount--;
               if (_products.length == parsedRequest["data"].length) {
                 _stillLoading = false;
               }
@@ -61,10 +66,16 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Widget> result = new List();
     if (_products == null) return result;
     for (Product product in _products) {
-      result.add(new ProductPreview(product, onProductDeleted: fetchProducts));
+      result.add(new ProductPreview(product, onProductsChanged: fetchProducts));
     }
     if (_stillLoading) {
-      result.add(ProductPreviewPlaceholder());
+      if (_productCount > 0) {
+        for (var i = 0; i < _productCount; i++) {
+          result.add(ProductPreviewPlaceholder());
+        }
+      } else {
+        result.add(ProductPreviewPlaceholder());
+      }
     }
     return result;
   }

@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/imageData.dart';
 import 'package:flutter_app/models/product.dart';
 import 'package:flutter_app/util/Util.dart';
-import 'package:flutter_app/widgets/components/categoryTreeView.dart';
+import 'package:flutter_app/widgets/components/categorySelector/categoryTreeView.dart';
+import 'package:flutter_app/widgets/components/dateSelector.dart';
 import 'package:flutter_app/widgets/components/photoComposer/photoComposer.dart';
 import 'package:flutter_app/widgets/components/priceSelector.dart';
 import 'package:flutter_app/widgets/components/steps/customStepper.dart';
@@ -28,6 +29,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
   TextEditingController _descriptionController = new TextEditingController();
   PriceSelector _priceSelector;
   CategoryTreeView _categoryTreeView;
+  DateSelector _dateSelector;
   int _currentStep = 0;
   List<CustomStep> _steps;
   @override
@@ -94,7 +96,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
         "inStock": 1,
         "lastStock": true,
         "active": true,
-        "releaseDate": DateTime.now().toIso8601String(),
+        "releaseDate": _dateSelector.releaseDate.toIso8601String(),
         "prices": [
           {
             "customerGroupKey": "EK",
@@ -137,6 +139,9 @@ class _CreateProductPageState extends State<CreateProductPage> {
         _descriptionController.text = _product.description;
         _priceSelector =
             new PriceSelector(_product.price, _product.fakePrice, true);
+        _dateSelector = DateSelector(
+          initDate: widget._newProduct ? null : _product.releaseDate,
+        );
 
         _steps = <CustomStep>[
           CustomStep(
@@ -178,12 +183,16 @@ class _CreateProductPageState extends State<CreateProductPage> {
             ),
           ),
           CustomStep(
-            title: Text("Modell"),
+            title: Text("Kategorie"),
             content: _categoryTreeView,
           ),
           CustomStep(
             title: Text("Preis"),
             content: _priceSelector,
+          ),
+          CustomStep(
+            title: Text("Datum"),
+            content: _dateSelector,
           ),
         ];
       });
