@@ -1,13 +1,16 @@
 import 'dart:async';
 
+import 'package:diKapo/util/AppRouter.dart';
+import 'package:diKapo/widgets/pages/AuthPage.dart';
+import 'package:diKapo/widgets/pages/MyHomePage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/util/AppRouter.dart';
-import 'package:flutter_app/widgets/pages/AuthPage.dart';
-import 'package:flutter_app/widgets/pages/MyHomePage.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
 //  SharedPreferences.setMockInitialValues({});
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(new MyApp());
 }
 
@@ -25,6 +28,14 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'diKapo',
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en', 'US'),
+        const Locale('de', 'DE'),
+      ],
       theme: new ThemeData(
         // This is the theme of your application.
         //
@@ -70,7 +81,7 @@ class _MyAppState extends State<MyApp> {
         });
         return;
       }
-      _screen = new MyHomePage(title: 'diKapo Mützen Verwaltungs App');
+      _screen = new MyHomePage(title: 'diKapo App - für Mama ♥');
     });
   }
 }

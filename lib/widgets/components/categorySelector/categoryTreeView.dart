@@ -1,7 +1,7 @@
+import 'package:diKapo/models/productCategory.dart';
+import 'package:diKapo/util/Util.dart';
+import 'package:diKapo/widgets/components/categorySelector/activatableChip.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/productCategory.dart';
-import 'package:flutter_app/util/Util.dart';
-import 'package:flutter_app/widgets/components/categorySelector/activatableChip.dart';
 
 class CategoryTreeView extends StatefulWidget {
   List<ProductCategory> _activeCategories;
@@ -22,7 +22,7 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
       children: <Widget>[
         Card(
           child: Padding(
-            padding: EdgeInsets.all(Util.relSize(context, 2.0)),
+            padding: EdgeInsets.all(Util.relWidth(context, 2.0)),
             child: Column(
               children: <Widget>[
                 Center(
@@ -33,7 +33,7 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
                 ),
                 Divider(),
                 Container(
-                  height: Util.relSize(
+                  height: Util.relWidth(
                       context,
                       ((1 / 4 * widget._activeCategories.length).toInt() + 1) *
                           5.0),
@@ -125,8 +125,8 @@ class _CategoryItemState extends State<CategoryItem> {
     Widget inner;
     if (widget._isLeaf) {
       inner = Container(
-        padding: EdgeInsets.only(left: Util.relSize(context, 2.0)),
-        margin: EdgeInsets.all(Util.relSize(context, 2.0)),
+        padding: EdgeInsets.only(left: Util.relWidth(context, 2.0)),
+        margin: EdgeInsets.all(Util.relWidth(context, 2.0)),
         child: ActivatableChip(
           activated: _highlight,
           label: Text(
@@ -145,14 +145,14 @@ class _CategoryItemState extends State<CategoryItem> {
       inner = Container(
         decoration: BoxDecoration(
             border: Border(
-                left: BorderSide(width: Util.relSize(context, .3)),
+                left: BorderSide(width: Util.relWidth(context, .3)),
                 bottom: _isExpanded
                     ? BorderSide(
-                        width: Util.relSize(context, .3), color: Colors.grey)
+                        width: Util.relWidth(context, .3), color: Colors.grey)
                     : BorderSide.none)),
-        margin: EdgeInsets.all(Util.relSize(context, 3.0)),
-        padding: EdgeInsets.only(left: Util.relSize(context, 2.0)),
-        width: Util.relSize(context, 900.0),
+        margin: EdgeInsets.all(Util.relWidth(context, 3.0)),
+        padding: EdgeInsets.only(left: Util.relWidth(context, 2.0)),
+        width: Util.relWidth(context, 900.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -174,7 +174,7 @@ class _CategoryItemState extends State<CategoryItem> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.only(left: Util.relSize(context, 4.0)),
+                    padding: EdgeInsets.only(left: Util.relWidth(context, 4.0)),
                     child: Icon(_isExpanded
                         ? Icons.arrow_drop_up
                         : Icons.arrow_drop_down),
@@ -203,7 +203,7 @@ class _CategoryItemState extends State<CategoryItem> {
       );
     }
     return Container(
-      padding: EdgeInsets.only(left: Util.relSize(context, 1.0)),
+      padding: EdgeInsets.only(left: Util.relWidth(context, 1.0)),
       child: inner,
     );
   }

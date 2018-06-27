@@ -1,6 +1,6 @@
+import 'package:diKapo/models/imageData.dart';
+import 'package:diKapo/widgets/pages/ImageViewer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/imageData.dart';
-import 'package:flutter_app/widgets/pages/ImageViewer.dart';
 
 class ImageUnit extends StatelessWidget {
   ImageData _imageData;

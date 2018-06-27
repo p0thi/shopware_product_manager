@@ -1,5 +1,6 @@
+import 'package:diKapo/models/imageData.dart';
+import 'package:diKapo/util/Util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/imageData.dart';
 import 'package:zoomable_image/zoomable_image.dart';
 
 class ImageViewer extends StatefulWidget {
@@ -40,19 +41,22 @@ class _ImageViewerState extends State<ImageViewer> {
                 ),
               ),
             ),
-            Text("Image: ${widget._image.image != null}"),
-            Text("Thumbnail: ${widget._image.thumbnail != null}"),
-            Row(
-              children: <Widget>[
-                RaisedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text("Schließen"),
-                ),
-                RaisedButton(
-                  onPressed: null,
-                  child: Text("Baum"),
-                )
-              ],
+            widget._image.thumbnail != null
+                ? Padding(
+                    padding: EdgeInsets.all(Util.relWidth(context, 10.0)),
+                    child: Center(
+                      child: Text(
+                        "MERKE:\nDas angezeigte Bild ist nur ein Vorschaubild. Das echte Bild im Shop hat eine bessere Qualität!",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  )
+                : Container(),
+            Center(
+              child: RaisedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("Schließen"),
+              ),
             )
           ],
         ),

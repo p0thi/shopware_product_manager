@@ -1,5 +1,5 @@
+import 'package:diKapo/widgets/components/photoComposer/imageUnit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/widgets/components/photoComposer/imageUnit.dart';
 
 class TrashArea extends StatelessWidget {
   @override

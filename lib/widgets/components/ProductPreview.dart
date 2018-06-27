@@ -1,9 +1,9 @@
+import 'package:diKapo/models/imageData.dart';
+import 'package:diKapo/models/product.dart';
+import 'package:diKapo/util/AppRouter.dart';
+import 'package:diKapo/util/Util.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/imageData.dart';
-import 'package:flutter_app/models/product.dart';
-import 'package:flutter_app/util/AppRouter.dart';
-import 'package:flutter_app/util/Util.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -68,13 +68,13 @@ class _ProductPreviewState extends State<ProductPreview> {
                 image: NetworkImage(_imageUrl), fit: BoxFit.cover),
             borderRadius: BorderRadius.all(Radius.circular(50.0)),
             border: Border.all(
-                width: Util.relSize(context, .7), color: Colors.green)),
+                width: Util.relWidth(context, .7), color: Colors.green)),
       ),
       contentPadding: new EdgeInsets.only(
-          top: Util.relSize(context, 3.3),
-          right: Util.relSize(context, 1.7),
-          bottom: Util.relSize(context, 3.3),
-          left: Util.relSize(context, 1.7)),
+          top: Util.relWidth(context, 3.3),
+          right: Util.relWidth(context, 1.7),
+          bottom: Util.relWidth(context, 3.3),
+          left: Util.relWidth(context, 1.7)),
       trailing: PopupMenuButton<_Choice>(
         onSelected: _select,
         itemBuilder: (context) {
@@ -121,7 +121,9 @@ class _ProductPreviewState extends State<ProductPreview> {
                   actions: <Widget>[
                     RaisedButton(
                       child: Text("Ja, löschen!"),
-                      onPressed: () {
+                      onPressed: () async {
+                        Product myProduct =
+                            await Product.fromId(widget._product.id);
                         http
                             .delete(
                                 "${Util.baseApiUrl}articles/${widget._product.id}",
@@ -129,6 +131,17 @@ class _ProductPreviewState extends State<ProductPreview> {
                                     prefs.get("username"), prefs.get("pass")))
                             .then((response) {
                           print(response.body);
+                          for (ImageData imageData in myProduct.imageDatas) {
+                            http
+                                .delete(
+                                    "${Util.baseApiUrl}media/${imageData.id}",
+                                    headers: Util.httpHeaders(
+                                        prefs.get("username"),
+                                        prefs.get("pass")))
+                                .then((resp) {
+                              print(resp.body);
+                            });
+                          }
                           widget._onProductsChanged();
                         });
                         Navigator.of(context).pop();
@@ -152,7 +165,7 @@ class _ProductPreviewState extends State<ProductPreview> {
 
 class _Choice {
   static List<_Choice> choices = <_Choice>[
-//    _Choice("Bearbeiten", 0), // edit-product TODO edit product
+    _Choice("Bearbeiten", 0), // edit-product TODO edit product
     _Choice("Duplizieren", 1), // duplicate-product
     _Choice("Löschen", 2),
   ];

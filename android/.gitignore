@@ -2,8 +2,10 @@
 *.class
 .gradle
 /local.properties
+/key.properties
 /.idea/workspace.xml
 /.idea/libraries
+/app/proguard-rules.pro
 .DS_Store
 /build
 /captures

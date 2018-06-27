@@ -36,7 +36,7 @@ class Util {
     return false;
   }
 
-  static double relSize(BuildContext context, double percent) {
+  static double relWidth(BuildContext context, double percent) {
     double width = 400.0;
     try {
       width = MediaQuery.of(context).size.width;
@@ -44,7 +44,15 @@ class Util {
     return width * (percent / 100);
   }
 
-  static List<int> cropImage(String filePath) {
+  static double relHeight(BuildContext context, double percent) {
+    double height = 750.0;
+    try {
+      height = MediaQuery.of(context).size.height;
+    } catch (e) {}
+    return height * (percent / 100);
+  }
+
+  static String cropImage(String filePath) {
     dartImage.Image image =
         dartImage.decodeImage(File(filePath).readAsBytesSync());
     int width = image.width;
@@ -57,10 +65,26 @@ class Util {
 
     dartImage.Image thumbnail =
         dartImage.copyCrop(image, startingPoint, 0, minDimension, minDimension);
-    print(thumbnail.width);
-    print(thumbnail.height);
 
-    return dartImage.encodeJpg(thumbnail);
+    if (thumbnail.exif != null && thumbnail.exif.orientation != null) {
+      if (thumbnail.exif.orientation <= 2) {
+        thumbnail = rotate(0, thumbnail);
+      } else if (thumbnail.exif.orientation <= 4) {
+        thumbnail = rotate(2, thumbnail);
+      } else if (thumbnail.exif.orientation <= 6) {
+        thumbnail = rotate(1, thumbnail);
+      } else if (thumbnail.exif.orientation <= 8) {
+        thumbnail = rotate(3, thumbnail);
+      }
+      thumbnail.exif.rawData = null;
+    }
+
+//    return base64Encode(dartImage.encodePng(thumbnail)).toString();
+    return base64Encode(dartImage.encodeJpg(thumbnail)).toString();
 //    return Image.memory(dartImage.encodeJpg(thumbnail, quality: 100));
+  }
+
+  static dartImage.Image rotate(int timesOfRotation, dartImage.Image image) {
+    return dartImage.copyRotate(image, timesOfRotation * 90.0);
   }
 }

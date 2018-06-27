@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter_app/models/imageData.dart';
-import 'package:flutter_app/models/productCategory.dart';
-import 'package:flutter_app/util/Util.dart';
+import 'package:diKapo/models/imageData.dart';
+import 'package:diKapo/models/productCategory.dart';
+import 'package:diKapo/util/Util.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,7 +26,8 @@ class Product {
     Map<String, dynamic> map = json.decode(jsonString);
     result._id = map["data"]["id"].toString();
     result._name = map["data"]["name"].toString();
-    result._description = map["data"]["description"].toString();
+    result._description =
+        map["data"]["descriptionLong"].toString().replaceAll("<br>", "\n");
     result._quantity = map["data"]["mainDetail"]["inStock"];
     result._artNr = map["data"]["mainDetail"]["number"];
 
@@ -69,7 +70,7 @@ class Product {
     return result;
   }
 
-  static Future<Product> fromId(int id) async {
+  static Future<Product> fromId(String id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var result = await http
         .get("${Util.baseApiUrl}articles/$id",

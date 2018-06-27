@@ -1,5 +1,5 @@
+import 'package:diKapo/util/Util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/util/Util.dart';
 
 class DateSelector extends StatefulWidget {
   DateTime _releaseDate;
@@ -21,18 +21,19 @@ class _DateSelectorState extends State<DateSelector> {
       children: <Widget>[
         Card(
           child: Padding(
-            padding: EdgeInsets.all(Util.relSize(context, 2.0)),
+            padding: EdgeInsets.all(Util.relWidth(context, 2.0)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Center(child: Text("Artikel Veröffentlichen am:")),
                 Padding(
-                  padding: EdgeInsets.all(Util.relSize(context, 2.0)),
+                  padding: EdgeInsets.all(Util.relWidth(context, 2.0)),
                   child: FlatButton(
                     child: Text("${_intToDay(widget._releaseDate.weekday)}  "
                         "${widget._releaseDate.day}.${widget._releaseDate.month}.${widget._releaseDate.year}"),
                     onPressed: () async {
                       DateTime picked = await showDatePicker(
+                          locale: Locale("de", "DE"),
                           context: context,
                           initialDate: widget._releaseDate,
                           firstDate:

@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:diKapo/util/Util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/util/Util.dart';
-import 'package:path/path.dart' as path;
 
 class ImageData {
   static final int thumbnailSize = 140;
@@ -11,6 +9,7 @@ class ImageData {
   String _name;
   String _extension;
   File _imageFile;
+  String _imageBase64;
   String _thumbnailUrl;
   Image _image;
   Image _thumbnail;
@@ -45,24 +44,25 @@ class ImageData {
     _thumbnail = thumbnail;
   }
 
-  ImageData.withImage(Image image /*, File file*/) {
+  ImageData.withImage(Image image, String imageBase64) {
 //    _imageFile = file;
+    _imageBase64 = imageBase64;
     _image = image;
   }
 
-  dynamic getShopwareObject(String productTitlle) {
+  dynamic getShopwareObject(String productTitle) {
     if (_thumbnail != null) {
       return {
         "mediaId": _id,
       };
     } else {
-      String extension = path.extension(_imageFile.path).replaceFirst(".", "");
+//      String extension = path.extension(_imageFile.path).replaceFirst(".", "");
       return {
         "album": -1,
-        "link":
-            "data:image/$extension;base64,${base64Encode(_imageFile.readAsBytesSync())}",
-        "name": productTitlle,
-        "description": path.basename(_imageFile.path)
+        "file": "data:image/jpeg;base64,$_imageBase64",
+//        "link": "data:image/jpeg;base64,$_imageBase64",
+        "name": productTitle,
+        "description": productTitle
       };
     }
   }

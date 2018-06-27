@@ -1,8 +1,7 @@
+import 'package:diKapo/widgets/pages/AuthPage.dart';
+import 'package:diKapo/widgets/pages/CreateProductPage.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/widgets/pages/AuthPage.dart';
-import 'package:flutter_app/widgets/pages/CreateProductPage.dart';
-import 'package:flutter_app/widgets/pages/ImageViewer.dart';
 
 class AppRouter {
   static final AppRouter _instance = new AppRouter._internal();
@@ -15,13 +14,16 @@ class AppRouter {
   Router router() => _router;
 
   void configureRoutes() {
-    var duplicateProductHandler = new Handler(handlerFunc: (BuildContext context, Map<String, dynamic> params) {
-      return CreateProductPage(int.parse(params["id"][0]), true);
+    var duplicateProductHandler = new Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      return CreateProductPage(params["id"][0].toString(), true);
     });
-    var editProductHandler = new Handler(handlerFunc: (BuildContext context, Map<String, dynamic> params) {
-      return CreateProductPage(int.parse(params["id"][0]), false);
+    var editProductHandler = new Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+      return CreateProductPage(params["id"][0].toString(), false);
     });
-    var authHandler = new Handler(handlerFunc: (BuildContext context, Map<String, dynamic> params) {
+    var authHandler = new Handler(
+        handlerFunc: (BuildContext context, Map<String, dynamic> params) {
       return new AuthPage(null);
     });
     _router.define("/duplicate-product/:id", handler: duplicateProductHandler);

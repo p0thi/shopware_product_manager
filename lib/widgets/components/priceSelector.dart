@@ -1,5 +1,5 @@
+import 'package:diKapo/util/Util.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app/util/Util.dart';
 
 class PriceSelector extends StatefulWidget {
   double _price;
@@ -19,6 +19,18 @@ class PriceSelector extends StatefulWidget {
 }
 
 class _PriceSelectorState extends State<PriceSelector> {
+  TextEditingController _priceController;
+  TextEditingController _fakePriceController;
+
+  @override
+  void initState() {
+    super.initState();
+    _priceController = TextEditingController(
+        text: widget._price.toString().replaceAll(".", ","));
+    _fakePriceController = TextEditingController(
+        text: widget._fakePrice.toString().replaceAll(".", ","));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,7 +43,7 @@ class _PriceSelectorState extends State<PriceSelector> {
                 children: <Widget>[
                   Text(
                     "Vorschau",
-                    style: TextStyle(fontSize: Util.relSize(context, 4.0)),
+                    style: TextStyle(fontSize: Util.relWidth(context, 4.0)),
                   ),
                   Divider(),
                   Row(
@@ -39,18 +51,18 @@ class _PriceSelectorState extends State<PriceSelector> {
                     children: <Widget>[
                       Text("Preis: "),
                       Text(
-                        "${widget._price.toStringAsFixed(2)} €",
+                        "${widget._price.toStringAsFixed(2).replaceAll(".", ",")} €",
                         style: TextStyle(
                             color: Colors.green,
-                            fontSize: Util.relSize(context, 3.8),
+                            fontSize: Util.relWidth(context, 3.8),
                             fontWeight: FontWeight.bold),
                       ),
                       widget._hasFake
                           ? Text(
-                              "${widget._fakePrice.toStringAsFixed(2)} €",
+                              "${widget._fakePrice.toStringAsFixed(2).replaceAll(".", ",")} €",
                               style: TextStyle(
                                   color: Colors.red,
-                                  fontSize: Util.relSize(context, 3.8),
+                                  fontSize: Util.relWidth(context, 3.8),
                                   fontWeight: FontWeight.bold,
                                   decoration: TextDecoration.lineThrough),
                             )
@@ -71,7 +83,7 @@ class _PriceSelectorState extends State<PriceSelector> {
                     Text(
                       "Soll ein Fake-Preis angezeigt werden?",
                       softWrap: true,
-                      style: TextStyle(fontSize: Util.relSize(context, 3.5)),
+                      style: TextStyle(fontSize: Util.relWidth(context, 3.5)),
                     ),
                     Switch(
                       value: widget._hasFake,
@@ -93,31 +105,32 @@ class _PriceSelectorState extends State<PriceSelector> {
                 children: <Widget>[
                   Container(
                     child: TextField(
-                      controller: new TextEditingController(
-                          text: widget._price.toString()),
+                      controller: _priceController,
                       keyboardType:
                           TextInputType.numberWithOptions(signed: false),
                       decoration: InputDecoration(labelText: "Preis"),
                       onChanged: (value) {
                         setState(() {
-                          widget._price = double.parse(value);
+                          widget._price =
+                              double.tryParse(value.replaceAll(",", ".")) ?? .0;
                         });
                       },
                     ),
                   ),
-                  Divider(),
+                  widget._hasFake ? Divider() : Container(),
                   widget._hasFake
                       ? Container(
                           child: TextField(
-                            controller: new TextEditingController(
-                                text: widget._fakePrice.toString()),
+                            controller: _fakePriceController,
                             keyboardType:
                                 TextInputType.numberWithOptions(signed: false),
                             decoration:
                                 InputDecoration(labelText: "Fake Preis"),
                             onChanged: (value) {
                               setState(() {
-                                widget._fakePrice = double.parse(value);
+                                widget._fakePrice = double
+                                        .tryParse(value.replaceAll(",", ".")) ??
+                                    .0;
                               });
                             },
                           ),
