@@ -133,6 +133,14 @@ class _CreateProductPageState extends State<CreateProductPage> {
       floatingActionButton: new FloatingActionButton(
         heroTag: "saveproduct",
         onPressed: () {
+          if (_saving) return;
+          if (_photoComposer.currentProcessingPicturesCount != 0) {
+            Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text("Es werden noch Bilder verarbeitet..."),
+                  backgroundColor: Colors.red,
+                ));
+            return;
+          }
           safeProduct(context);
         },
         tooltip: 'Delete',
@@ -259,8 +267,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
         _categoryTreeView = CategoryTreeView(_product.categories);
         _titleController.text = _product.name;
         _descriptionController.text = _product.description;
-        _priceSelector =
-            new PriceSelector(_product.price, _product.fakePrice, true);
+        _priceSelector = new PriceSelector(_product.price, _product.fakePrice,
+            _product.price != _product.fakePrice);
         _dateSelector = DateSelector(
           initDate: widget._newProduct ? null : _product.releaseDate,
         );

@@ -14,6 +14,9 @@ import 'package:image_picker/image_picker.dart';
 class PhotoComposer extends StatefulWidget {
   Product _product;
   ValueChanged<ImageData> _onImageDataRemoved;
+  int _currentProcessingPicturesCount = 0;
+
+  int get currentProcessingPicturesCount => _currentProcessingPicturesCount;
 
   PhotoComposer(this._product,
       {@required ValueChanged<ImageData> onImageRemoved}) {
@@ -26,7 +29,6 @@ class PhotoComposer extends StatefulWidget {
 
 class _PhotoComposerState extends State<PhotoComposer> {
   List<Widget> _items;
-  int _currentProcessingPicturesCount = 0;
 
   @override
   void initState() {
@@ -45,7 +47,7 @@ class _PhotoComposerState extends State<PhotoComposer> {
         });
       }));
     }
-    for (var i = 0; i < _currentProcessingPicturesCount; i++) {
+    for (var i = 0; i < widget._currentProcessingPicturesCount; i++) {
       result.add(Container(
         width: 200.0,
         height: 200.0,
@@ -94,7 +96,7 @@ class _PhotoComposerState extends State<PhotoComposer> {
                       maxHeight: 2500.0)
                   .then((file) {
                 setState(() {
-                  _currentProcessingPicturesCount++;
+                  widget._currentProcessingPicturesCount++;
                   _items = generateItems();
                 });
                 _processImage(context, file);
@@ -132,7 +134,7 @@ class _PhotoComposerState extends State<PhotoComposer> {
                         maxHeight: 2500.0)
                     .then((file) {
                   setState(() {
-                    _currentProcessingPicturesCount++;
+                    widget._currentProcessingPicturesCount++;
                     _items = generateItems();
                   });
                   _processImage(context, file);
@@ -148,8 +150,8 @@ class _PhotoComposerState extends State<PhotoComposer> {
   void _processImage(BuildContext context, File file) {
     if (file == null) {
       setState(() {
-        _currentProcessingPicturesCount =
-            max(_currentProcessingPicturesCount - 1, 0);
+        widget._currentProcessingPicturesCount =
+            max(widget._currentProcessingPicturesCount - 1, 0);
         _items = generateItems();
         Scaffold.of(context).showSnackBar(SnackBar(
             backgroundColor: Colors.red,
@@ -165,8 +167,8 @@ class _PhotoComposerState extends State<PhotoComposer> {
     compute(Util.cropImage, file.path).then((data) {
       List<int> bytes = base64Decode(data);
       setState(() {
-        _currentProcessingPicturesCount =
-            max(_currentProcessingPicturesCount - 1, 0);
+        widget._currentProcessingPicturesCount =
+            max(widget._currentProcessingPicturesCount - 1, 0);
         widget._product.imageDatas.add(new ImageData.withImage(
             Image.memory(
               bytes,

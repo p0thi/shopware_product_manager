@@ -13,6 +13,8 @@ class Product {
   String _name;
   String _description;
   DateTime _releaseDate;
+  DateTime _changedDate;
+  String _tax;
   List<ImageData> _imageDatas;
   int _quantity;
   List<ProductCategory> _categories;
@@ -30,6 +32,8 @@ class Product {
         map["data"]["descriptionLong"].toString().replaceAll("<br>", "\n");
     result._quantity = map["data"]["mainDetail"]["inStock"];
     result._artNr = map["data"]["mainDetail"]["number"];
+    result._changedDate = DateTime.parse(map["data"]["changed"]).toLocal();
+    result._tax = map["data"]["tax"]["name"];
 
     for (var priceUnit in map["data"]["mainDetail"]["prices"]) {
       if (priceUnit["customerGroupKey"] == "EK") {
@@ -118,4 +122,8 @@ class Product {
   double get price => _price;
 
   List<ProductCategory> get categories => _categories;
+
+  String get tax => _tax;
+
+  DateTime get changedDate => _changedDate;
 }

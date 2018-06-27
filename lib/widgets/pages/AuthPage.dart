@@ -28,6 +28,10 @@ class _AuthPageState extends State<AuthPage> {
             children: <Widget>[
               Padding(
                 padding: EdgeInsets.all(Util.relWidth(context, 3.0)),
+                child: Image.asset("assets/Logo - 11.01.18.png"),
+              ),
+              Padding(
+                padding: EdgeInsets.all(Util.relWidth(context, 3.0)),
                 child: new TextField(
                   controller: usernameController,
                   autofocus: true,
