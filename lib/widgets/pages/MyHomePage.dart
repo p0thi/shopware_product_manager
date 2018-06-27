@@ -28,7 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
     fetchProducts();
   }
 
-  void fetchProducts() {
+  void fetchProducts() async {
     setState(() {
       _stillLoading = true;
       _products = new List<Product>();
