@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:diKapo/models/product.dart';
@@ -88,8 +89,14 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: new Text(widget.title),
       ),
-      body: new ListView(
-        children: getProductWidgets(),
+      body: RefreshIndicator(
+        child: new ListView(
+          children: getProductWidgets(),
+        ),
+        onRefresh: () async {
+          Future.delayed(Duration(milliseconds: 1));
+          fetchProducts();
+        },
       ),
       floatingActionButton: new FloatingActionButton(
         heroTag: "homepage",
