@@ -164,19 +164,22 @@ class _PhotoComposerState extends State<PhotoComposer> {
         duration: Duration(seconds: 5),
         content: Text("Das Bild wird verarbeitet...")));
 
-    compute(Util.cropImage, file.path).then((data) {
-      List<int> bytes = base64Decode(data);
-      setState(() {
-        widget._currentProcessingPicturesCount =
-            max(widget._currentProcessingPicturesCount - 1, 0);
-        widget._product.imageDatas.add(new ImageData.withImage(
-            Image.memory(
-              bytes,
-            ),
-            data));
-        _items = generateItems();
+    try {
+      compute(Util.cropImage, file.path).then((data) {
+        List<int> bytes = base64Decode(data);
+        setState(() {
+          widget._currentProcessingPicturesCount =
+              max(widget._currentProcessingPicturesCount - 1, 0);
+          widget._product.imageDatas.add(new ImageData.withImage(
+              Image.memory(
+                bytes,
+              ),
+              data));
+          _items = generateItems();
+        });
       });
-    });
+    } catch (e) {
+    }
   }
 
   @override

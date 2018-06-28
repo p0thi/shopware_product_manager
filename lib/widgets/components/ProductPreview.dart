@@ -1,8 +1,7 @@
 import 'package:diKapo/models/imageData.dart';
 import 'package:diKapo/models/product.dart';
-import 'package:diKapo/util/AppRouter.dart';
 import 'package:diKapo/util/Util.dart';
-import 'package:fluro/fluro.dart';
+import 'package:diKapo/widgets/pages/CreateProductPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -98,7 +97,9 @@ class _ProductPreviewState extends State<ProductPreview>
                 bottom: Util.relWidth(context, 3.3),
                 left: Util.relWidth(context, 1.7)),
             trailing: PopupMenuButton<_Choice>(
-              onSelected: _select,
+              onSelected: (choice) {
+                _select(context, choice);
+              },
               itemBuilder: (context) {
                 return _Choice.choices.map((choice) {
                   return PopupMenuItem<_Choice>(
@@ -213,17 +214,23 @@ class _ProductPreviewState extends State<ProductPreview>
     );
   }
 
-  void _select(_Choice choice) {
+  void _select(BuildContext context, _Choice choice) {
     switch (choice.value) {
       case 0:
-        AppRouter().router().navigateTo(
-            context, "/edit-product/${widget._product.id}",
-            transition: TransitionType.native);
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return CreateProductPage(widget._product.id, false);
+        }));
+//        AppRouter().router().navigateTo(
+//            context, "/edit-product/${widget._product.id}",
+//            transition: TransitionType.native);
         break;
       case 1:
-        AppRouter().router().navigateTo(
-            context, "/duplicate-product/${widget._product.id}",
-            transition: TransitionType.native);
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return CreateProductPage(widget._product.id, true);
+        }));
+//        AppRouter().router().navigateTo(
+//            context, "/duplicate-product/${widget._product.id}",
+//            transition: TransitionType.native);
         break;
       case 2:
         SharedPreferences.getInstance().then((prefs) {

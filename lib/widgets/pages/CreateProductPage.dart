@@ -17,8 +17,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CreateProductPage extends StatefulWidget {
   final String _id;
   final bool _newProduct;
+  Product _product;
 
   CreateProductPage(this._id, this._newProduct);
+
+  factory CreateProductPage.fromProduct(Product product, bool newProduct) {
+    CreateProductPage result = CreateProductPage(null, newProduct);
+    result._product = product;
+    return result;
+  }
 
   @override
   _CreateProductPageState createState() => new _CreateProductPageState();
@@ -143,7 +150,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
           }
           safeProduct(context);
         },
-        tooltip: 'Delete',
+        tooltip: 'Speichern',
         child: new Icon(Icons.save),
       ),
     );
@@ -257,80 +264,87 @@ class _CreateProductPageState extends State<CreateProductPage> {
   @override
   void initState() {
     super.initState();
-    Product.fromId(widget._id).then((Product product) {
-      if (widget._newProduct) {
-        product.id = null;
-        product.imageDatas.clear();
-      }
-      setState(() {
-        _product = product;
-        _categoryTreeView = CategoryTreeView(_product.categories);
-        _titleController.text = _product.name;
-        _descriptionController.text = _product.description;
-        _priceSelector = new PriceSelector(_product.price, _product.fakePrice,
-            _product.price != _product.fakePrice);
-        _dateSelector = DateSelector(
-          initDate: widget._newProduct ? null : _product.releaseDate,
-        );
-        _photoComposer = PhotoComposer(
-          _product,
-          onImageRemoved: (imageData) {
-            _imagedToRemove.add(imageData);
-          },
-        );
-        _httpFunction = widget._newProduct ? http.post : http.put;
 
-        _steps = <CustomStep>[
-          CustomStep(
-            title: Text("Titel"),
-            content: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new TextField(
-                  style: TextStyle(
-                      fontSize: 22.0,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold),
-                  controller: _titleController,
-                ),
-              ),
-            ),
-          ),
-          CustomStep(
-            title: Text("Bilder"),
-            content: _photoComposer,
-          ),
-          CustomStep(
-            title: Text("Beschreibung"),
-            content: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new TextField(
-                  maxLines: null,
-                  style: TextStyle(
-                    fontSize: 18.0,
+    if (widget._product != null) {
+      setupProject(widget._product);
+    } else {
+      Product.fromId(widget._id).then(setupProject);
+    }
+  }
+
+  void setupProject(Product product) {
+    if (widget._newProduct) {
+      product.id = null;
+      product.imageDatas.clear();
+    }
+    setState(() {
+      _product = product;
+      _categoryTreeView = CategoryTreeView(_product.categories);
+      _titleController.text = _product.name;
+      _descriptionController.text = _product.description;
+      _priceSelector = new PriceSelector(_product.price, _product.fakePrice,
+          _product.price != _product.fakePrice);
+      _dateSelector = DateSelector(
+        initDate: widget._newProduct ? null : _product.releaseDate,
+      );
+      _photoComposer = PhotoComposer(
+        _product,
+        onImageRemoved: (imageData) {
+          _imagedToRemove.add(imageData);
+        },
+      );
+      _httpFunction = widget._newProduct ? http.post : http.put;
+
+      _steps = <CustomStep>[
+        CustomStep(
+          title: Text("Titel"),
+          content: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new TextField(
+                style: TextStyle(
+                    fontSize: 22.0,
                     color: Colors.black,
-                  ),
-                  controller: _descriptionController,
-                  autocorrect: true,
-                ),
+                    fontWeight: FontWeight.bold),
+                controller: _titleController,
               ),
             ),
           ),
-          CustomStep(
-            title: Text("Kategorie"),
-            content: _categoryTreeView,
+        ),
+        CustomStep(
+          title: Text("Bilder"),
+          content: _photoComposer,
+        ),
+        CustomStep(
+          title: Text("Beschreibung"),
+          content: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new TextField(
+                maxLines: null,
+                style: TextStyle(
+                  fontSize: 18.0,
+                  color: Colors.black,
+                ),
+                controller: _descriptionController,
+                autocorrect: true,
+              ),
+            ),
           ),
-          CustomStep(
-            title: Text("Preis"),
-            content: _priceSelector,
-          ),
-          CustomStep(
-            title: Text("Datum"),
-            content: _dateSelector,
-          ),
-        ];
-      });
+        ),
+        CustomStep(
+          title: Text("Kategorie"),
+          content: _categoryTreeView,
+        ),
+        CustomStep(
+          title: Text("Preis"),
+          content: _priceSelector,
+        ),
+        CustomStep(
+          title: Text("Datum"),
+          content: _dateSelector,
+        ),
+      ];
     });
   }
 }

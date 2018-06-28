@@ -8,22 +8,23 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Product {
-  String _id;
-  String _artNr;
-  String _name;
-  String _description;
-  DateTime _releaseDate;
-  DateTime _changedDate;
-  String _tax;
-  List<ImageData> _imageDatas;
-  int _quantity;
-  List<ProductCategory> _categories;
-  double _price;
-  double _fakePrice;
+  String _id = "";
+  String _artNr = "";
+  String _name = "";
+  String _description = "";
+  DateTime _releaseDate = DateTime.now();
+  DateTime _changedDate = DateTime.now();
+  String _tax = "";
+  List<ImageData> _imageDatas = List();
+  int _quantity = 0;
+  List<ProductCategory> _categories = List();
+  double _price = .0;
+  double _fakePrice = .0;
 
   //JSON String constructor
+  Product();
 
-  static Product fromJson(String jsonString) {
+  factory Product.fromJson(String jsonString) {
     Product result = new Product();
     Map<String, dynamic> map = json.decode(jsonString);
     result._id = map["data"]["id"].toString();
@@ -44,7 +45,6 @@ class Product {
       }
     }
 
-    result._categories = new List();
     for (var category in map["data"]["categories"]) {
       result._categories.add(ProductCategory(
           category["name"],
@@ -59,7 +59,6 @@ class Product {
               : null));
     }
 
-    result._imageDatas = new List();
     try {
       for (var image in map["data"]["images"]) {
         result._imageDatas.add(new ImageData(

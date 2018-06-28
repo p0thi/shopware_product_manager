@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:diKapo/util/AppRouter.dart';
 import 'package:diKapo/widgets/pages/AuthPage.dart';
 import 'package:diKapo/widgets/pages/MyHomePage.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +32,7 @@ class _MyAppState extends State<MyApp> {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: [
-        const Locale('en', 'US'),
+//        const Locale('en', 'US'),
         const Locale('de', 'DE'),
       ],
       theme: new ThemeData(
@@ -61,9 +60,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    final appRouter = new AppRouter();
-    appRouter.configureRoutes();
-//    appRouter.router().printTree();
     updateScreen();
   }
 
