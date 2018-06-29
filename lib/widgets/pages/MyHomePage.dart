@@ -142,7 +142,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                             .push(MaterialPageRoute(builder: (context) {
                           return CreateProductPage.fromProduct(
                               new Product(), true);
-                        }));
+                        })).then((value) {
+                          fetchProducts();
+                        });
                         break;
                     }
                   },

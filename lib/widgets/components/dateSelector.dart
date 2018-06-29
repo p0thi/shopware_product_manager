@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 
 class DateSelector extends StatefulWidget {
   DateTime _releaseDate;
+  Function _inputChanged;
 
-  DateSelector({DateTime initDate}) {
+  DateSelector(this._inputChanged, {DateTime initDate}) {
     this._releaseDate = initDate ?? DateTime.now();
   }
 
@@ -43,6 +44,7 @@ class _DateSelectorState extends State<DateSelector> {
                       if (picked != null) {
                         setState(() {
                           widget._releaseDate = picked;
+                          widget._inputChanged();
                         });
                       }
                     },

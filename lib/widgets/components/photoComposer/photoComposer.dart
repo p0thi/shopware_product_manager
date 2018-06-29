@@ -15,10 +15,11 @@ class PhotoComposer extends StatefulWidget {
   Product _product;
   ValueChanged<ImageData> _onImageDataRemoved;
   int _currentProcessingPicturesCount = 0;
+  Function _inputChanged;
 
   int get currentProcessingPicturesCount => _currentProcessingPicturesCount;
 
-  PhotoComposer(this._product,
+  PhotoComposer(this._product, this._inputChanged,
       {@required ValueChanged<ImageData> onImageRemoved}) {
     this._onImageDataRemoved = onImageRemoved;
   }
@@ -44,6 +45,7 @@ class _PhotoComposerState extends State<PhotoComposer> {
           print(widget._product.imageDatas.remove(iData));
           widget._onImageDataRemoved(iData);
           _items = generateItems();
+          widget._inputChanged();
         });
       }));
     }
@@ -98,6 +100,7 @@ class _PhotoComposerState extends State<PhotoComposer> {
                 setState(() {
                   widget._currentProcessingPicturesCount++;
                   _items = generateItems();
+                  widget._inputChanged();
                 });
                 _processImage(context, file);
               });
@@ -136,6 +139,7 @@ class _PhotoComposerState extends State<PhotoComposer> {
                   setState(() {
                     widget._currentProcessingPicturesCount++;
                     _items = generateItems();
+                    widget._inputChanged();
                   });
                   _processImage(context, file);
                 });
@@ -153,6 +157,7 @@ class _PhotoComposerState extends State<PhotoComposer> {
         widget._currentProcessingPicturesCount =
             max(widget._currentProcessingPicturesCount - 1, 0);
         _items = generateItems();
+        widget._inputChanged();
         Scaffold.of(context).showSnackBar(SnackBar(
             backgroundColor: Colors.red,
             duration: Duration(seconds: 5),
@@ -176,10 +181,10 @@ class _PhotoComposerState extends State<PhotoComposer> {
               ),
               data));
           _items = generateItems();
+          widget._inputChanged();
         });
       });
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   @override
@@ -187,6 +192,8 @@ class _PhotoComposerState extends State<PhotoComposer> {
     setState(() {
       _items = generateItems();
     });
+    print(_items.length);
+    print((1 / 3 * _items.length));
     return Column(
       children: <Widget>[
         Card(
@@ -194,7 +201,7 @@ class _PhotoComposerState extends State<PhotoComposer> {
 //            height: ((1 / 4 * _items.length).toInt() + 1) * 200.0,
             padding: new EdgeInsets.all(8.0),
             child: Container(
-              height: ((1 / 4 * _items.length).toInt() + 1) *
+              height: ((_items.length - 1) ~/ 3 + 1) *
                   Util.relHeight(context, 14.0),
               child: new GridView.count(
                 children: _items,

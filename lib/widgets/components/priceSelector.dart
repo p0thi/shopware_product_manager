@@ -5,10 +5,12 @@ class PriceSelector extends StatefulWidget {
   double _price;
   double _fakePrice;
   bool _hasFake;
+  Function _inputChanged;
 
   double get price => _price;
 
-  PriceSelector(this._price, this._fakePrice, this._hasFake);
+  PriceSelector(
+      this._price, this._fakePrice, this._hasFake, this._inputChanged);
 
   @override
   _PriceSelectorState createState() => _PriceSelectorState();
@@ -90,6 +92,7 @@ class _PriceSelectorState extends State<PriceSelector> {
                       onChanged: (bool value) {
                         setState(() {
                           widget._hasFake = value;
+                          widget._inputChanged();
                         });
                       },
                     ),
@@ -113,6 +116,7 @@ class _PriceSelectorState extends State<PriceSelector> {
                         setState(() {
                           widget._price =
                               double.tryParse(value.replaceAll(",", ".")) ?? .0;
+                          widget._inputChanged();
                         });
                       },
                     ),
@@ -131,6 +135,7 @@ class _PriceSelectorState extends State<PriceSelector> {
                                 widget._fakePrice = double
                                         .tryParse(value.replaceAll(",", ".")) ??
                                     .0;
+                                widget._inputChanged();
                               });
                             },
                           ),

@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:diKapo/models/imageData.dart';
 import 'package:diKapo/models/product.dart';
 import 'package:diKapo/util/Util.dart';
+import 'package:diKapo/widgets/components/availabilitySelector.dart';
 import 'package:diKapo/widgets/components/categorySelector/categoryTreeView.dart';
 import 'package:diKapo/widgets/components/dateSelector.dart';
 import 'package:diKapo/widgets/components/photoComposer/photoComposer.dart';
@@ -36,6 +37,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
   Product _product;
 
   bool _saving = false;
+  bool changed = false;
   double _savingPercent = .1;
 
   List<ImageData> _imagedToRemove = new List();
@@ -47,111 +49,154 @@ class _CreateProductPageState extends State<CreateProductPage> {
   CategoryTreeView _categoryTreeView;
   DateSelector _dateSelector;
   PhotoComposer _photoComposer;
+  AvailabilitySelector _availabilitySelector;
 
   int _currentStep = 0;
   List<CustomStep> _steps;
 
+  void inputsChanged([dynamic value]) {
+    changed = true;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      key: widgetKey,
-      appBar: new AppBar(
-        title: Row(
+    return WillPopScope(
+      onWillPop: () {
+        if (changed) {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text(
+                      "Wirklich zurück? Nicht gespeicherte Änderungen gehen verloren."),
+                  actions: <Widget>[
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop(changed);
+                      },
+                      child: Text("Ja, zurück."),
+                    ),
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text("Nein. Hier bleiben."),
+                    )
+                  ],
+                );
+              });
+          return Future.value(false);
+        } else {
+          return Future.value(true);
+        }
+      },
+      child: new Scaffold(
+        key: widgetKey,
+        appBar: new AppBar(
+          title: Row(
+            children: <Widget>[
+              new Text(
+                  "Produkt ${widget._newProduct ? "erstellen" : "bearbeiten"}"),
+              Padding(
+                padding: EdgeInsets.only(left: Util.relWidth(context, 2.0)),
+                child: Icon(widget._newProduct ? Icons.add : Icons.edit),
+              )
+            ],
+          ),
+        ),
+        body: Stack(
           children: <Widget>[
-            new Text(
-                "Produkt ${widget._newProduct ? "erstellen" : "bearbeiten"}"),
-            Padding(
-              padding: EdgeInsets.only(left: Util.relWidth(context, 2.0)),
-              child: Icon(widget._newProduct ? Icons.add : Icons.edit),
-            )
+            Material(
+              child: _product != null
+                  ? new Container(
+                      padding: new EdgeInsets.all(6.0),
+                      child: CustomStepper(
+                          currentCustomStep: _currentStep,
+                          type: CustomStepperType.vertical,
+                          onCustomStepContinue: () {
+                            FocusScope
+                                .of(context)
+                                .requestFocus(new FocusNode());
+                            setState(() {
+                              _steps[_currentStep].isActive = false;
+                              _currentStep =
+                                  min(_currentStep + 1, _steps.length - 1);
+                            });
+                          },
+                          onCustomStepCancel: () {
+                            FocusScope
+                                .of(context)
+                                .requestFocus(new FocusNode());
+                            setState(() {
+                              _currentStep = max(0, _currentStep - 1);
+                            });
+                          },
+                          onCustomStepTapped: (index) {
+                            FocusScope
+                                .of(context)
+                                .requestFocus(new FocusNode());
+                            setState(() {
+                              _currentStep = index;
+                            });
+                          },
+                          steps: _steps))
+                  : new Center(
+                      child: new CircularProgressIndicator(),
+                    ),
+//        child: new PhotoComposer(),
+            ),
+            _saving
+                ? Positioned.fill(
+                    child: Stack(
+                    children: <Widget>[
+                      Positioned.fill(
+                        child: Opacity(
+                          child: Container(
+                            color: Colors.white,
+                          ),
+                          opacity: .9,
+                        ),
+                      ),
+                      Center(
+                          child: Padding(
+                        padding:
+                            EdgeInsets.only(top: Util.relWidth(context, 10.0)),
+                        child: Column(
+                          children: <Widget>[
+                            Padding(
+                              padding:
+                                  EdgeInsets.all(Util.relWidth(context, 13.0)),
+                              child: LinearProgressIndicator(
+                                backgroundColor: Colors.grey,
+                                value: _savingPercent,
+                              ),
+                            ),
+                            Text("Speichern...")
+                          ],
+                        ),
+                      )),
+                    ],
+                  ))
+                : Container(),
           ],
         ),
-      ),
-      body: Stack(
-        children: <Widget>[
-          Material(
-            child: _product != null
-                ? new Container(
-                    padding: new EdgeInsets.all(6.0),
-                    child: CustomStepper(
-                        currentCustomStep: _currentStep,
-                        type: CustomStepperType.vertical,
-                        onCustomStepContinue: () {
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                          setState(() {
-                            _steps[_currentStep].isActive = false;
-                            _currentStep =
-                                min(_currentStep + 1, _steps.length - 1);
-                          });
-                        },
-                        onCustomStepCancel: () {
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                          setState(() {
-                            _currentStep = max(0, _currentStep - 1);
-                          });
-                        },
-                        onCustomStepTapped: (index) {
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                          setState(() {
-                            _currentStep = index;
-                          });
-                        },
-                        steps: _steps))
-                : new Center(
-                    child: new CircularProgressIndicator(),
-                  ),
-//        child: new PhotoComposer(),
-          ),
-          _saving
-              ? Positioned.fill(
-                  child: Stack(
-                  children: <Widget>[
-                    Positioned.fill(
-                      child: Opacity(
-                        child: Container(
-                          color: Colors.white,
-                        ),
-                        opacity: .9,
-                      ),
-                    ),
-                    Center(
-                        child: Padding(
-                      padding:
-                          EdgeInsets.only(top: Util.relWidth(context, 10.0)),
-                      child: Column(
-                        children: <Widget>[
-                          Padding(
-                            padding:
-                                EdgeInsets.all(Util.relWidth(context, 13.0)),
-                            child: LinearProgressIndicator(
-                              backgroundColor: Colors.grey,
-                              value: _savingPercent,
-                            ),
-                          ),
-                          Text("Speichern...")
-                        ],
-                      ),
-                    )),
-                  ],
-                ))
-              : Container(),
-        ],
-      ),
-      floatingActionButton: new FloatingActionButton(
-        heroTag: "saveproduct",
-        onPressed: () {
-          if (_saving) return;
-          if (_photoComposer.currentProcessingPicturesCount != 0) {
-            Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text("Es werden noch Bilder verarbeitet..."),
-                  backgroundColor: Colors.red,
-                ));
-            return;
-          }
-          safeProduct(context);
-        },
-        tooltip: 'Speichern',
-        child: new Icon(Icons.save),
+        floatingActionButton: new FloatingActionButton(
+          heroTag: "saveproduct",
+          onPressed: () {
+            if (_saving) return;
+            if (_photoComposer.currentProcessingPicturesCount != 0) {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text("Es werden noch Bilder verarbeitet..."),
+                    backgroundColor: Colors.red,
+                  ));
+              return;
+            }
+            safeProduct(context);
+          },
+          tooltip: 'Speichern',
+          child: new Icon(Icons.save),
+        ),
       ),
     );
   }
@@ -184,11 +229,6 @@ class _CreateProductPageState extends State<CreateProductPage> {
     print(_product.imageDatas.length);
     print(_imagedToRemove.length);
 
-//    setState(() {
-//      _saving = false;
-//    });
-//    return;
-
     List<dynamic> shopwareImages = new List();
     for (ImageData imageData in _product.imageDatas) {
       int id;
@@ -214,7 +254,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
       "name": _titleController.text,
       "descriptionLong": _descriptionController.text.replaceAll("\n", "<br>"),
       "taxId": 1,
-      "active": true,
+      "active": _availabilitySelector.isAvailable,
       "__options_images": {"replace": true},
       "images": shopwareImages,
       "categories": List.of(_categoryTreeView.activeCategories.map((category) {
@@ -222,9 +262,9 @@ class _CreateProductPageState extends State<CreateProductPage> {
       })),
       "mainDetail": {
         "number": "${DateTime.now().hashCode}",
-        "inStock": 1,
-        "lastStock": true,
-        "active": true,
+        "inStock": _availabilitySelector.quantity,
+        "lastStock": _availabilitySelector.quantity == 1,
+        "stockMin": 1,
         "releaseDate": _dateSelector.releaseDate.toIso8601String(),
         "prices": [
           {
@@ -251,12 +291,9 @@ class _CreateProductPageState extends State<CreateProductPage> {
         setState(() {
           _saving = false;
         });
-//        widgetKey.currentState.widget;
+        changed = false;
         widgetKey.currentState.showSnackBar(
             SnackBar(content: Text("Artikel erfolgreich gespeichert...")));
-//        Scaffold.of(myContext).showSnackBar(
-//            SnackBar(content: Text("Artikel erfolgreich gespeichert...")));
-//        Navigator.of(myContext).pop();
       },
     );
   }
@@ -279,20 +316,26 @@ class _CreateProductPageState extends State<CreateProductPage> {
     }
     setState(() {
       _product = product;
-      _categoryTreeView = CategoryTreeView(_product.categories);
+      _categoryTreeView = CategoryTreeView(_product.categories, inputsChanged);
       _titleController.text = _product.name;
       _descriptionController.text = _product.description;
       _priceSelector = new PriceSelector(_product.price, _product.fakePrice,
-          _product.price != _product.fakePrice);
+          _product.price != _product.fakePrice, inputsChanged);
       _dateSelector = DateSelector(
+        inputsChanged,
         initDate: widget._newProduct ? null : _product.releaseDate,
       );
       _photoComposer = PhotoComposer(
         _product,
+        inputsChanged,
         onImageRemoved: (imageData) {
           _imagedToRemove.add(imageData);
         },
       );
+      _availabilitySelector = new AvailabilitySelector(
+          widget._newProduct ? true : _product.isActive,
+          widget._newProduct ? 1 : _product.quantity,
+          inputsChanged);
       _httpFunction = widget._newProduct ? http.post : http.put;
 
       _steps = <CustomStep>[
@@ -307,6 +350,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                     color: Colors.black,
                     fontWeight: FontWeight.bold),
                 controller: _titleController,
+                onChanged: inputsChanged,
               ),
             ),
           ),
@@ -328,6 +372,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                 ),
                 controller: _descriptionController,
                 autocorrect: true,
+                onChanged: inputsChanged,
               ),
             ),
           ),
@@ -335,6 +380,10 @@ class _CreateProductPageState extends State<CreateProductPage> {
         CustomStep(
           title: Text("Kategorie"),
           content: _categoryTreeView,
+        ),
+        CustomStep(
+          title: Text("Verfügbarkeit"),
+          content: _availabilitySelector,
         ),
         CustomStep(
           title: Text("Preis"),

@@ -83,13 +83,18 @@ class _ProductPreviewState extends State<ProductPreview>
               height: 80.0,
               decoration: BoxDecoration(
                   image: DecorationImage(
-                      image: NetworkImage(imageUrl != null
-                          ? imageUrl
-                          : "http://via.placeholder.com/50x50"),
+                      image: imageUrl != null
+                          ? NetworkImage(imageUrl)
+                          : AssetImage("assets/1x1.png"),
                       fit: BoxFit.cover),
                   borderRadius: BorderRadius.all(Radius.circular(50.0)),
                   border: Border.all(
-                      width: Util.relWidth(context, .7), color: Colors.green)),
+                      width: Util.relWidth(context, 1.0),
+                      color: widget._product.quantity < 1
+                          ? Colors.red
+                          : !widget._product.isActive
+                              ? Colors.orange
+                              : Colors.green)),
             ),
             contentPadding: new EdgeInsets.only(
                 top: Util.relWidth(context, 3.3),
@@ -144,7 +149,10 @@ class _ProductPreviewState extends State<ProductPreview>
                             ),
                             Padding(
                               padding: tableRowPadding,
-                              child: Text("${widget._product.price} €"),
+                              child: Text(
+                                "${widget._product.price} €",
+                                style: TextStyle(color: Colors.green),
+                              ),
                             ),
                             Padding(
                               padding: tableRowPadding,
@@ -155,10 +163,15 @@ class _ProductPreviewState extends State<ProductPreview>
                             ),
                             Padding(
                               padding: tableRowPadding,
-                              child: Text("${widget._product.fakePrice != null
+                              child: Text(
+                                "${widget._product.fakePrice != null
                                       && widget._product.fakePrice != widget._product.price
                                       ? widget._product.fakePrice
-                                      : "----"} €"),
+                                      : "----"} €",
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    decoration: TextDecoration.lineThrough),
+                              ),
                             )
                           ]),
                           TableRow(children: <Widget>[
@@ -183,7 +196,10 @@ class _ProductPreviewState extends State<ProductPreview>
                             ),
                             Padding(
                               padding: tableRowPadding,
-                              child: Text("${widget._product.artNr}"),
+                              child: Text(
+                                "${widget._product.artNr}",
+                                style: TextStyle(color: Colors.grey),
+                              ),
                             ),
                           ]),
                           TableRow(children: <Widget>[
@@ -199,8 +215,25 @@ class _ProductPreviewState extends State<ProductPreview>
                               child: Text(
                                   "${widget._product.changedDate.day}.${widget._product.changedDate.month}.${widget._product.changedDate.year}"),
                             ),
-                            Container(),
-                            Container()
+                            Padding(
+                              padding: tableRowPadding,
+                              child: Text(
+                                "Aktiv:",
+                                style: expandedTextStyle,
+                              ),
+                            ),
+                            Padding(
+                              padding: tableRowPadding,
+                              child: widget._product.isActive
+                                  ? Text(
+                                      "Ja",
+                                      style: TextStyle(color: Colors.green),
+                                    )
+                                  : Text(
+                                      "Nein",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                            ),
                           ])
                         ],
                       ),
@@ -219,18 +252,16 @@ class _ProductPreviewState extends State<ProductPreview>
       case 0:
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return CreateProductPage(widget._product.id, false);
-        }));
-//        AppRouter().router().navigateTo(
-//            context, "/edit-product/${widget._product.id}",
-//            transition: TransitionType.native);
+        })).then((value) {
+          widget._onProductsChanged();
+        });
         break;
       case 1:
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return CreateProductPage(widget._product.id, true);
-        }));
-//        AppRouter().router().navigateTo(
-//            context, "/duplicate-product/${widget._product.id}",
-//            transition: TransitionType.native);
+        })).then((value) {
+          widget._onProductsChanged();
+        });
         break;
       case 2:
         SharedPreferences.getInstance().then((prefs) {
@@ -250,7 +281,7 @@ class _ProductPreviewState extends State<ProductPreview>
                     ),
                   ),
                   actions: <Widget>[
-                    RaisedButton(
+                    FlatButton(
                       child: Text("Ja, löschen!"),
                       onPressed: () async {
                         Product myProduct =
@@ -278,7 +309,7 @@ class _ProductPreviewState extends State<ProductPreview>
                         Navigator.of(context).pop();
                       },
                     ),
-                    RaisedButton(
+                    FlatButton(
                       child: Text("Nein, nicht löschen"),
                       onPressed: () {
                         Navigator.of(context).pop();

@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 
 class CategoryTreeView extends StatefulWidget {
   List<ProductCategory> _activeCategories;
+  Function _inputChanged;
 
-  CategoryTreeView(this._activeCategories);
+  CategoryTreeView(this._activeCategories, this._inputChanged);
 
   get activeCategories => _activeCategories;
 
@@ -33,10 +34,8 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
                 ),
                 Divider(),
                 Container(
-                  height: Util.relWidth(
-                      context,
-                      ((1 / 4 * widget._activeCategories.length).toInt() + 1) *
-                          5.0),
+                  height: Util.relWidth(context,
+                      ((widget._activeCategories.length - 1) ~/ 3 + 1) * 5.0),
                   child: GridView.count(
                     childAspectRatio: 5.0,
                     children: List.of(widget._activeCategories.map((category) {
@@ -67,14 +66,14 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
                                   ProductCategory myCategory = ProductCategory
                                       .getById(id, _allCategories);
                                   setState(() {
-                                    if (isActive /*&&
-                                      !widget._activeCategories.contains(category)*/
-                                        ) {
+                                    if (isActive) {
                                       widget._activeCategories.add(myCategory);
+                                      widget._inputChanged();
                                     }
                                     if (!isActive) {
                                       ProductCategory.removeById(
                                           id, widget._activeCategories);
+                                      widget._inputChanged();
 //                              widget._activeCategories.remove(myCategory);
                                     }
                                     print(widget._activeCategories.length);
