@@ -18,6 +18,7 @@ dependencies:
   shared_preferences: "0.4.1"
   zoomable_image: "1.2.0"
   crypto: any
+  fluttertoast: ^2.0.3
 
 dev_dependencies:
   flutter_test:

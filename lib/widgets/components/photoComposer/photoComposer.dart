@@ -43,6 +43,7 @@ class _PhotoComposerState extends State<PhotoComposer> {
       result.add(ImageUnit(imageData, (ImageData iData) {
         setState(() {
           widget._onImageDataRemoved(iData);
+          widget._product.imageDatas.remove(iData);
           _items = generateItems();
           widget._inputChanged();
         });

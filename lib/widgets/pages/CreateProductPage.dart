@@ -12,6 +12,7 @@ import 'package:diKapo/widgets/components/photoComposer/photoComposer.dart';
 import 'package:diKapo/widgets/components/priceSelector.dart';
 import 'package:diKapo/widgets/components/steps/customStepper.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -33,7 +34,6 @@ class CreateProductPage extends StatefulWidget {
 }
 
 class _CreateProductPageState extends State<CreateProductPage> {
-  final GlobalKey<ScaffoldState> widgetKey = GlobalKey();
   Product _product;
 
   bool _saving = false;
@@ -41,7 +41,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
   bool saved = false;
   double _savingPercent = .1;
 
-  List<ImageData> _imagedToRemove = new List();
+  List<ImageData> _imagesToRemove = new List();
   Function _httpFunction;
 
   TextEditingController _titleController = new TextEditingController();
@@ -93,7 +93,6 @@ class _CreateProductPageState extends State<CreateProductPage> {
         return Future.value(false);
       },
       child: new Scaffold(
-        key: widgetKey,
         appBar: new AppBar(
           title: Row(
             children: <Widget>[
@@ -214,6 +213,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
     http.Response response = await http.delete(
         "${Util.baseApiUrl}media/${imageData.id}",
         headers: Util.httpHeaders(prefs.get("username"), prefs.get("pass")));
+    print(response.body);
   }
 
   void safeProduct(BuildContext myContext) async {
@@ -224,7 +224,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     double percentStep =
-        .85 / (_product.imageDatas.length + _imagedToRemove.length);
+        .85 / (_product.imageDatas.length + _imagesToRemove.length);
 
     List<dynamic> shopwareImages = new List();
     for (ImageData imageData in _product.imageDatas) {
@@ -240,7 +240,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
       });
     }
 
-    for (ImageData imageData in _imagedToRemove) {
+    for (ImageData imageData in _imagesToRemove) {
       deleteMedia(imageData, prefs);
       setState(() {
         _savingPercent += percentStep;
@@ -292,9 +292,13 @@ class _CreateProductPageState extends State<CreateProductPage> {
           _saving = false;
           saved = true;
         });
+        Fluttertoast.showToast(
+            msg: "Artikel erfolgreich gespeichert...",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIos: 2);
+        Navigator.of(context).pop(changed);
         changed = false;
-        widgetKey.currentState.showSnackBar(
-            SnackBar(content: Text("Artikel erfolgreich gespeichert...")));
       },
     );
   }
@@ -330,7 +334,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
         _product,
         inputsChanged,
         onImageRemoved: (imageData) {
-          _imagedToRemove.add(imageData);
+          _imagesToRemove.add(imageData);
+          _product.imageDatas.remove(imageData);
         },
       );
       _availabilitySelector = new AvailabilitySelector(
