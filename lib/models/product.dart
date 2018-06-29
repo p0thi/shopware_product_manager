@@ -29,6 +29,7 @@ class Product {
     Product result = new Product();
     Map<String, dynamic> map = json.decode(jsonString);
     result._id = map["data"]["id"].toString();
+    print("Product id: ${result._id}");
     result._name = map["data"]["name"].toString();
     result._description =
         map["data"]["descriptionLong"].toString().replaceAll("<br>", "\n");

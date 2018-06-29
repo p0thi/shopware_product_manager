@@ -251,18 +251,22 @@ class _CreateProductPageState extends State<CreateProductPage> {
       "name": _titleController.text,
       "descriptionLong": _descriptionController.text.replaceAll("\n", "<br>"),
       "taxId": 1,
-      "active": _availabilitySelector.isAvailable,
+//      "active": _availabilitySelector.isAvailable,
       "__options_images": {"replace": true},
       "images": shopwareImages,
       "categories": List.of(_categoryTreeView.activeCategories.map((category) {
         return {"id": category.id};
       })),
       "mainDetail": {
-        "number": "${DateTime.now().hashCode}",
+        "number": "${_product.artNr != null && _product.artNr != ""
+                ? _product.artNr
+                : DateTime.now().hashCode}",
         "inStock": _availabilitySelector.quantity,
-        "lastStock": _availabilitySelector.quantity == 1,
+        "lastStock": true,
         "stockMin": 1,
+        "active": _availabilitySelector.isAvailable,
         "releaseDate": _dateSelector.releaseDate.toIso8601String(),
+        "shippingTime": "7",
         "prices": [
           {
             "customerGroupKey": "EK",
