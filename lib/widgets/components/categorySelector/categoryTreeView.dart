@@ -80,7 +80,7 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
                                   });
                                 }))),
                       )
-                    : Placeholder(),
+                    : Container(),
               ),
             ],
           ),
