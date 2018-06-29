@@ -56,7 +56,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               headers: Util.httpHeaders(
                   prefs.getString("username"), prefs.getString("pass")))
           .then((response) {
-        print(response.body);
         Map<String, dynamic> parsedRequest = json.decode(response.body);
         setState(() {
           _productCount = parsedRequest["data"].length;
@@ -143,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                           return CreateProductPage.fromProduct(
                               new Product(), true);
                         })).then((value) {
-                          fetchProducts();
+                          if (value) fetchProducts();
                         });
                         break;
                     }

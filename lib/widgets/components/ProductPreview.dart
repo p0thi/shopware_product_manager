@@ -44,7 +44,6 @@ class _ProductPreviewState extends State<ProductPreview>
     if (mounted)
       setState(() {
         imageUrl = image.thumbnailUrl;
-        print(imageUrl);
       });
   }
 
@@ -253,14 +252,14 @@ class _ProductPreviewState extends State<ProductPreview>
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return CreateProductPage(widget._product.id, false);
         })).then((value) {
-          widget._onProductsChanged();
+          if (value) widget._onProductsChanged();
         });
         break;
       case 1:
         Navigator.push(context, MaterialPageRoute(builder: (context) {
           return CreateProductPage(widget._product.id, true);
         })).then((value) {
-          widget._onProductsChanged();
+          if (value) widget._onProductsChanged();
         });
         break;
       case 2:
@@ -292,7 +291,6 @@ class _ProductPreviewState extends State<ProductPreview>
                                 headers: Util.httpHeaders(
                                     prefs.get("username"), prefs.get("pass")))
                             .then((response) {
-                          print(response.body);
                           for (ImageData imageData in myProduct.imageDatas) {
                             http
                                 .delete(
@@ -300,9 +298,7 @@ class _ProductPreviewState extends State<ProductPreview>
                                     headers: Util.httpHeaders(
                                         prefs.get("username"),
                                         prefs.get("pass")))
-                                .then((resp) {
-                              print(resp.body);
-                            });
+                                .then((resp) {});
                           }
                           widget._onProductsChanged();
                         });

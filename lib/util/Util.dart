@@ -59,8 +59,6 @@ class Util {
     int height = image.height;
     int minDimension = min(width, height);
     int maxDimension = max(width, height);
-    print(maxDimension);
-    print(minDimension);
     int startingPoint = ((maxDimension - minDimension) / 2).round();
 
     dartImage.Image thumbnail =

@@ -62,7 +62,7 @@ class _AuthPageState extends State<AuthPage> {
                     prefs.setString("pass", passController.text);
                     widget._authenticated != null
                         ? widget._authenticated()
-                        : print("No callback set!");
+                        : null;
                   },
                   child: new Text("Anmelden"),
                 ),

@@ -38,6 +38,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
 
   bool _saving = false;
   bool changed = false;
+  bool saved = false;
   double _savingPercent = .1;
 
   List<ImageData> _imagedToRemove = new List();
@@ -73,7 +74,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                     FlatButton(
                       onPressed: () {
                         Navigator.of(context).pop();
-                        Navigator.of(context).pop(changed);
+                        Navigator.of(context).pop(saved);
                       },
                       child: Text("Ja, zurück."),
                     ),
@@ -86,10 +87,10 @@ class _CreateProductPageState extends State<CreateProductPage> {
                   ],
                 );
               });
-          return Future.value(false);
         } else {
-          return Future.value(true);
+          Navigator.of(context).pop(saved);
         }
+        return Future.value(false);
       },
       child: new Scaffold(
         key: widgetKey,
@@ -213,8 +214,6 @@ class _CreateProductPageState extends State<CreateProductPage> {
     http.Response response = await http.delete(
         "${Util.baseApiUrl}media/${imageData.id}",
         headers: Util.httpHeaders(prefs.get("username"), prefs.get("pass")));
-    print("Deleting media ${imageData.id}");
-    print(response.body);
   }
 
   void safeProduct(BuildContext myContext) async {
@@ -226,8 +225,6 @@ class _CreateProductPageState extends State<CreateProductPage> {
 
     double percentStep =
         .85 / (_product.imageDatas.length + _imagedToRemove.length);
-    print(_product.imageDatas.length);
-    print(_imagedToRemove.length);
 
     List<dynamic> shopwareImages = new List();
     for (ImageData imageData in _product.imageDatas) {
@@ -287,9 +284,9 @@ class _CreateProductPageState extends State<CreateProductPage> {
         headers: Util.httpHeaders(prefs.get("username"), prefs.get("pass")),
         body: json.encode(articleBody)).then(
       (response) {
-        print(response.body);
         setState(() {
           _saving = false;
+          saved = true;
         });
         changed = false;
         widgetKey.currentState.showSnackBar(

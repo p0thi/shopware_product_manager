@@ -76,7 +76,6 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
                                       widget._inputChanged();
 //                              widget._activeCategories.remove(myCategory);
                                     }
-                                    print(widget._activeCategories.length);
                                   });
                                 }))),
                       )
@@ -160,7 +159,6 @@ class _CategoryItemState extends State<CategoryItem> {
                 setState(
                   () {
                     _isExpanded = !_isExpanded;
-                    print(_isExpanded);
                   },
                 );
               },
@@ -216,7 +214,6 @@ class _CategoryItemState extends State<CategoryItem> {
         _isExpanded = true;
         break;
       }
-      print(category.name);
     }
   }
 }

@@ -42,7 +42,6 @@ class _PhotoComposerState extends State<PhotoComposer> {
     for (ImageData imageData in widget._product.imageDatas) {
       result.add(ImageUnit(imageData, (ImageData iData) {
         setState(() {
-          print(widget._product.imageDatas.remove(iData));
           widget._onImageDataRemoved(iData);
           _items = generateItems();
           widget._inputChanged();
@@ -192,8 +191,6 @@ class _PhotoComposerState extends State<PhotoComposer> {
     setState(() {
       _items = generateItems();
     });
-    print(_items.length);
-    print((1 / 3 * _items.length));
     return Column(
       children: <Widget>[
         Card(

@@ -9,7 +9,6 @@ class ImageUnit extends StatelessWidget {
   ImageUnit(this._imageData, this._onDelete);
 
   void deleteImage() {
-    print("delete image");
     _onDelete(_imageData);
   }
 

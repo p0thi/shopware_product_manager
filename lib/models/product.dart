@@ -82,7 +82,6 @@ class Product {
             headers: Util.httpHeaders(
                 prefs.getString("username"), prefs.getString("pass")))
         .then((response) {
-      print(response.body);
       return Product.fromJson(response.body);
     });
     return result;
