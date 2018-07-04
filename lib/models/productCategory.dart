@@ -47,7 +47,7 @@ class ProductCategory {
     if (isLeaf) return false;
     bool result = false;
     for (ProductCategory myCategory in getChildren(list)) {
-      result = result || myCategory.isParentOf(list, myCategory);
+      result = result || myCategory.isParentOf(list, category);
     }
     return result;
   }
