@@ -29,7 +29,9 @@ class _ActivatableChipState extends State<ActivatableChip> {
     return Container(
       child: GestureDetector(
         child: Chip(
-          label: widget._label,
+          label: Center(
+            child: widget._label,
+          ),
           backgroundColor: (widget._activeColor != null && widget._activated)
               ? widget._activeColor
               : Colors.black12,

@@ -1,5 +1,6 @@
 name: diKapo
 description: Eine App, um die Artikel im diKapo Shop zu verwalten.
+version: 0.3+3
 
 dependencies:
   flutter:

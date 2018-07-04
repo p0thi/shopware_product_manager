@@ -26,20 +26,35 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
             padding: EdgeInsets.all(Util.relWidth(context, 2.0)),
             child: Column(
               children: <Widget>[
-                Center(
-                  child: Text(
-                    "Folgende Kategorien sind momentan ausgewählt:",
-                    style: TextStyle(fontSize: 16.0),
+                Container(
+                  margin: EdgeInsets.all(Util.relHeight(context, 1.5)),
+                  child: Center(
+                    child: Text(
+                      "Folgende Kategorien sind momentan ausgewählt:",
+                      style: TextStyle(fontSize: 15.0),
+                    ),
                   ),
                 ),
-                Divider(),
                 Container(
-                  height: Util.relWidth(context,
-                      ((widget._activeCategories.length - 1) ~/ 3 + 1) * 5.0),
+                  height: Util.relWidth(
+                      context,
+                      ((widget._activeCategories.length - 1) ~/ 3 + 1) *
+                          Util.relHeight(context, .9)),
                   child: GridView.count(
-                    childAspectRatio: 5.0,
+                    mainAxisSpacing: Util.relHeight(context, .5),
+                    crossAxisSpacing: Util.relWidth(context, 1.0),
+                    childAspectRatio: 4.5,
                     children: List.of(widget._activeCategories.map((category) {
-                      return Text(category.name);
+                      return Material(
+                        elevation: .5,
+                        child: Center(
+                          child: Text(
+                            category.name,
+                            style:
+                                TextStyle(color: Theme.of(context).accentColor),
+                          ),
+                        ),
+                      );
                     })),
                     crossAxisCount: 3,
                   ),
@@ -51,8 +66,9 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
         Card(
           child: Column(
             children: <Widget>[
-              Text("Hier die Kategorie/en auswählen:"),
-              Divider(),
+              Container(
+                  margin: EdgeInsets.all(Util.relHeight(context, 1.5)),
+                  child: Text("Hier die Kategorie/en auswählen:")),
               Container(
                 child: _allCategories != null
                     ? Column(
@@ -115,21 +131,27 @@ class CategoryItem extends StatefulWidget {
   _CategoryItemState createState() => _CategoryItemState();
 }
 
-class _CategoryItemState extends State<CategoryItem> {
+class _CategoryItemState extends State<CategoryItem>
+    with TickerProviderStateMixin {
   bool _highlight = false;
   bool _isExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     Widget inner;
     if (widget._isLeaf) {
       inner = Container(
-        padding: EdgeInsets.only(left: Util.relWidth(context, 2.0)),
+//        padding: EdgeInsets.only(left: Util.relWidth(context, 2.0)),
         margin: EdgeInsets.all(Util.relWidth(context, 2.0)),
+        width: Util.relWidth(context, 900.0),
         child: ActivatableChip(
           activated: _highlight,
+          activeColor: Theme.of(context).accentColor,
           label: Text(
             widget._category.name,
-            style: TextStyle(fontSize: 18.0),
+            style: TextStyle(
+                fontSize: 18.0,
+                color: _highlight ? Theme.of(context).cardColor : Colors.black),
           ),
           onChanged: (isActive) {
             widget._onChanged(widget._category.id, isActive);
@@ -142,14 +164,12 @@ class _CategoryItemState extends State<CategoryItem> {
     } else {
       inner = Container(
         decoration: BoxDecoration(
-            border: Border(
-                left: BorderSide(width: Util.relWidth(context, .3)),
-                bottom: _isExpanded
-                    ? BorderSide(
-                        width: Util.relWidth(context, .3), color: Colors.grey)
-                    : BorderSide.none)),
-        margin: EdgeInsets.all(Util.relWidth(context, 3.0)),
-        padding: EdgeInsets.only(left: Util.relWidth(context, 2.0)),
+            borderRadius: BorderRadius.circular(Util.relWidth(context, 4.0)),
+            border: Border.all(
+                color: Colors.grey[400],
+                width: Util.relWidth(context, .3),
+                style: BorderStyle.solid)),
+        margin: EdgeInsets.all(Util.relWidth(context, 2.0)),
         width: Util.relWidth(context, 900.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -162,35 +182,44 @@ class _CategoryItemState extends State<CategoryItem> {
                   },
                 );
               },
-              child: Row(
-                children: <Widget>[
-                  Text(
-                    widget._category.name,
-                    style: TextStyle(
-                      fontSize: 18.0,
+              child: Container(
+                padding: EdgeInsets.all(Util.relWidth(context, 1.0)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      widget._category.name,
+                      style: TextStyle(
+                        fontSize: 18.0,
+                      ),
                     ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.only(left: Util.relWidth(context, 4.0)),
-                    child: Icon(_isExpanded
-                        ? Icons.arrow_drop_up
-                        : Icons.arrow_drop_down),
-                  ),
-                ],
+                    Container(
+                      padding:
+                          EdgeInsets.only(left: Util.relWidth(context, 4.0)),
+                      child: Icon(_isExpanded
+                          ? Icons.arrow_drop_up
+                          : Icons.arrow_drop_down),
+                    ),
+                  ],
+                ),
               ),
             ),
             Container(
-              child: Container(
-                height: !_isExpanded ? .0 : null,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: List.of(
-                    widget._category
-                        .getChildren(widget._allCategories)
-                        .map((myCategory) {
-                      return CategoryItem(myCategory, widget._allCategories,
-                          widget._selectedCategories, widget._onChanged);
-                    }),
+              child: AnimatedSize(
+                vsync: this,
+                duration: Duration(milliseconds: 200),
+                child: Container(
+                  height: !_isExpanded ? .0 : null,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: List.of(
+                      widget._category
+                          .getChildren(widget._allCategories)
+                          .map((myCategory) {
+                        return CategoryItem(myCategory, widget._allCategories,
+                            widget._selectedCategories, widget._onChanged);
+                      }),
+                    ),
                   ),
                 ),
               ),
@@ -200,7 +229,7 @@ class _CategoryItemState extends State<CategoryItem> {
       );
     }
     return Container(
-      padding: EdgeInsets.only(left: Util.relWidth(context, 1.0)),
+//      padding: EdgeInsets.only(left: Util.relWidth(context, 1.0)),
       child: inner,
     );
   }

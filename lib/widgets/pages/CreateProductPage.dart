@@ -346,6 +346,10 @@ class _CreateProductPageState extends State<CreateProductPage> {
 
       _steps = <CustomStep>[
         CustomStep(
+          title: Text("Bilder"),
+          content: _photoComposer,
+        ),
+        CustomStep(
           title: Text("Titel"),
           content: Card(
             child: Padding(
@@ -360,10 +364,6 @@ class _CreateProductPageState extends State<CreateProductPage> {
               ),
             ),
           ),
-        ),
-        CustomStep(
-          title: Text("Bilder"),
-          content: _photoComposer,
         ),
         CustomStep(
           title: Text("Beschreibung"),
