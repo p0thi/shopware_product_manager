@@ -66,6 +66,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               .then((product) {
             setState(() {
               _products.add(product);
+              _products.sort((Product a, Product b) =>
+                  (a.releaseDate.compareTo(b.releaseDate)) * -1);
               _productCount--;
               if (_products.length == parsedRequest["data"].length) {
                 _stillLoading = false;

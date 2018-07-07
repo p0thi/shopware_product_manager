@@ -37,7 +37,7 @@ class Product {
     result._artNr = map["data"]["mainDetail"]["number"];
     result._changedDate = DateTime.parse(map["data"]["changed"]).toLocal();
     result._tax = map["data"]["tax"]["name"];
-    result._isActive = map["data"]["active"];
+    result._isActive = map["data"]["mainDetail"]["active"];
 
     for (var priceUnit in map["data"]["mainDetail"]["prices"]) {
       if (priceUnit["customerGroupKey"] == "EK") {
