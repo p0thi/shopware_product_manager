@@ -209,9 +209,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
     return id;
   }
 
-  void deleteMedia(ImageData imageData, SharedPreferences prefs) async {
-    http.Response response = await http.delete(
-        "${Util.baseApiUrl}media/${imageData.id}",
+  void deleteMedia(int id, SharedPreferences prefs) async {
+    http.Response response = await http.delete("${Util.baseApiUrl}media/$id",
         headers: Util.httpHeaders(prefs.get("username"), prefs.get("pass")));
     print(response.body);
   }
@@ -227,12 +226,14 @@ class _CreateProductPageState extends State<CreateProductPage> {
         .85 / (_product.imageDatas.length + _imagesToRemove.length);
 
     List<dynamic> shopwareImages = new List();
+    List<int> newUploadedImages = List();
     for (ImageData imageData in _product.imageDatas) {
       int id;
       if (imageData.image == null) {
         id = imageData.id;
       } else {
         id = await safeMedia(imageData, prefs);
+        newUploadedImages.add(id);
       }
       shopwareImages.add({"mediaId": id});
       setState(() {
@@ -241,7 +242,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
     }
 
     for (ImageData imageData in _imagesToRemove) {
-      deleteMedia(imageData, prefs);
+      deleteMedia(imageData.id, prefs);
       setState(() {
         _savingPercent += percentStep;
       });
@@ -249,7 +250,6 @@ class _CreateProductPageState extends State<CreateProductPage> {
 
     Map<String, dynamic> articleBody = {
       "name": _titleController.text,
-      "descriptionLong": _descriptionController.text.replaceAll("\n", "<br>"),
       "taxId": 1,
 //      "active": _availabilitySelector.isAvailable,
       "__options_images": {"replace": true},
@@ -257,8 +257,10 @@ class _CreateProductPageState extends State<CreateProductPage> {
       "categories": List.of(_categoryTreeView.activeCategories.map((category) {
         return {"id": category.id};
       })),
+      "descriptionLong": _descriptionController.text.replaceAll("\n", "<br>"),
       "mainDetail": {
-        "number": "${_product.artNr != null && _product.artNr != ""
+        "number":
+            "${_product.artNr != null && _product.artNr != "" && !widget._newProduct
                 ? _product.artNr
                 : DateTime.now().hashCode}",
         "inStock": _availabilitySelector.quantity,
@@ -287,17 +289,31 @@ class _CreateProductPageState extends State<CreateProductPage> {
         "${Util.baseApiUrl}articles/${widget._newProduct ? "" : _product.id}",
         headers: Util.httpHeaders(prefs.get("username"), prefs.get("pass")),
         body: json.encode(articleBody)).then(
-      (response) {
+      (http.Response response) {
         setState(() {
           _saving = false;
           saved = true;
         });
-        Fluttertoast.showToast(
-            msg: "Artikel erfolgreich gespeichert...",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIos: 2);
-        Navigator.of(context).pop(changed);
+        print(response.body);
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          Fluttertoast.showToast(
+              msg: "Artikel erfolgreich gespeichert...",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIos: 2);
+          Navigator.of(context).pop(changed);
+        } else {
+          Fluttertoast.showToast(
+              msg:
+                  "Artikel konnte nicht gespeichert werden! Bitte erneut versuchen.",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIos: 2);
+          print(json.encode(articleBody));
+          for (int id in newUploadedImages) {
+            deleteMedia(id, prefs);
+          }
+        }
         changed = false;
       },
     );
