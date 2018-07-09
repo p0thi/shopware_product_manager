@@ -47,6 +47,15 @@ class _PhotoComposerState extends State<PhotoComposer> {
           _items = generateItems();
           widget._inputChanged();
         });
+      }, (myImageData) {
+        setState(() {
+          if (widget._product.imageDatas.remove(myImageData)) {
+            widget._product.imageDatas.insert(
+                widget._product.imageDatas.indexOf(imageData), myImageData);
+            widget._inputChanged();
+          }
+          _items = generateItems();
+        });
       }));
     }
     for (var i = 0; i < widget._currentProcessingPicturesCount; i++) {
