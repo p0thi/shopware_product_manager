@@ -12,8 +12,6 @@ class ImageData {
   String _imageBase64;
   String _thumbnailUrl;
   Image _image;
-  Image _thumbnail;
-
   ImageData(this._id, this._name, this._extension) {
     String hashString = "media/image/thumbnail/" +
         "${_name}_${thumbnailSize}x$thumbnailSize." +
@@ -31,17 +29,12 @@ class ImageData {
         "/" +
         "${_name}_${thumbnailSize}x$thumbnailSize.$_extension";
     _thumbnailUrl = imageUrl;
-    _thumbnail = new Image.network(
-      _thumbnailUrl,
-      fit: BoxFit.cover,
-      height: 150.0,
-      width: 150.0,
-    );
+    print("Thumbnail:");
+    print(imageUrl);
   }
 
-  ImageData.withThumbnail(Image thumbnail, String url) {
+  ImageData.withThumbnail(String url) {
     this._thumbnailUrl = url;
-    _thumbnail = thumbnail;
   }
 
   ImageData.withImage(Image image, String imageBase64) {
@@ -51,7 +44,9 @@ class ImageData {
   }
 
   dynamic getShopwareObject(String productTitle) {
-    if (_thumbnail != null) {
+    assert(productTitle != null);
+    assert(productTitle != "");
+    if (_thumbnailUrl != null) {
       return {
         "mediaId": _id,
       };
@@ -77,5 +72,10 @@ class ImageData {
 
   Image get image => _image;
 
-  Image get thumbnail => _thumbnail;
+  Image get thumbnail => Image.network(
+        _thumbnailUrl,
+        fit: BoxFit.cover,
+        height: 150.0,
+        width: 150.0,
+      );
 }

@@ -30,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     1: "Neuen Artikel anlegen",
   };
   AnimationController animationController;
-  List<Product> _products;
+  List<Product> _products = List();
   bool _stillLoading = false;
   int _productCount = 0;
 
@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   void fetchProducts() async {
     setState(() {
       _stillLoading = true;
-      _products = new List<Product>();
+      _products.clear();
     });
     SharedPreferences.getInstance().then((prefs) async {
       bool isAuthenticated = await Util.checkCredentials(

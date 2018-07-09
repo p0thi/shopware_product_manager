@@ -3,6 +3,7 @@
 .gradle
 /local.properties
 /key.properties
+key.properties
 /.idea/workspace.xml
 /.idea/libraries
 /app/proguard-rules.pro

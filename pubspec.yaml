@@ -20,6 +20,7 @@ dependencies:
   zoomable_image: "1.2.0"
   crypto: any
   fluttertoast: ^2.0.3
+  cached_network_image: "^0.4.1"
 
 dev_dependencies:
   flutter_test:

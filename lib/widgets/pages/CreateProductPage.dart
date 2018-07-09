@@ -204,8 +204,14 @@ class _CreateProductPageState extends State<CreateProductPage> {
   Future<int> safeMedia(ImageData imageData, SharedPreferences prefs) async {
     http.Response response = await http.post("${Util.baseApiUrl}media",
         headers: Util.httpHeaders(prefs.get("username"), prefs.get("pass")),
-        body: json.encode(imageData.getShopwareObject(_product.name)));
-    int id = json.decode(response.body)["data"]["id"];
+        body: json.encode(imageData.getShopwareObject(_titleController.text)));
+    int id;
+    try {
+      id = json.decode(response.body)["data"]["id"];
+    } catch (e) {
+      print(response.body);
+      return null;
+    }
     return id;
   }
 
@@ -233,7 +239,9 @@ class _CreateProductPageState extends State<CreateProductPage> {
         id = imageData.id;
       } else {
         id = await safeMedia(imageData, prefs);
-        newUploadedImages.add(id);
+        if (id != null) {
+          newUploadedImages.add(id);
+        }
       }
       shopwareImages.add({"mediaId": id});
       setState(() {
@@ -251,6 +259,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
     Map<String, dynamic> articleBody = {
       "name": _titleController.text,
       "taxId": 1,
+      "active": true,
 //      "active": _availabilitySelector.isAvailable,
       "__options_images": {"replace": true},
       "images": shopwareImages,
