@@ -70,10 +70,10 @@ class ImageData {
 
   Image get image => _image;
 
-  ImageProvider get thumbnail => NetworkImage(
+  Image get thumbnail => Image.network(
         _thumbnailUrl,
-//        fit: BoxFit.cover,
-//        height: 150.0,
-//        width: 150.0,
+        fit: BoxFit.cover,
+        height: 150.0,
+        width: 150.0,
       );
 }

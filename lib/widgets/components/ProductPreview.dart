@@ -37,8 +37,8 @@ class _ProductPreviewState extends State<ProductPreview>
     fetchImage();
   }
 
-  ImageProvider fetchImage() {
-    if (!imageAvailable) return AssetImage("assets/1x1.png");
+  Image fetchImage() {
+    if (!imageAvailable) return Image.asset("assets/1x1.png");
 //    ImageData image = widget._product.imageDatas[0];
     return widget._product.imageDatas[0].thumbnail;
   }
@@ -77,8 +77,8 @@ class _ProductPreviewState extends State<ProductPreview>
               width: 80.0,
               height: 80.0,
               decoration: BoxDecoration(
-                  image:
-                      DecorationImage(image: fetchImage(), fit: BoxFit.cover),
+                  image: DecorationImage(
+                      image: fetchImage().image, fit: BoxFit.cover),
                   borderRadius: BorderRadius.all(Radius.circular(50.0)),
                   border: Border.all(
                       width: Util.relWidth(context, 1.0),
