@@ -138,7 +138,7 @@ class _CategoryItemState extends State<CategoryItem>
 
   @override
   Widget build(BuildContext context) {
-    print("${widget._category.name} $_isExpanded");
+//    print("${widget._category.name} $_isExpanded");
     Widget inner;
     if (widget._isLeaf) {
       inner = Container(

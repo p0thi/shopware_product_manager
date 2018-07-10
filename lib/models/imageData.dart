@@ -29,8 +29,6 @@ class ImageData {
         "/" +
         "${_name}_${thumbnailSize}x$thumbnailSize.$_extension";
     _thumbnailUrl = imageUrl;
-    print("Thumbnail:");
-    print(imageUrl);
   }
 
   ImageData.withThumbnail(String url) {
@@ -72,10 +70,10 @@ class ImageData {
 
   Image get image => _image;
 
-  Image get thumbnail => Image.network(
+  ImageProvider get thumbnail => NetworkImage(
         _thumbnailUrl,
-        fit: BoxFit.cover,
-        height: 150.0,
-        width: 150.0,
+//        fit: BoxFit.cover,
+//        height: 150.0,
+//        width: 150.0,
       );
 }

@@ -77,7 +77,7 @@ class _MyAppState extends State<MyApp> {
         });
         return;
       }
-      _screen = new MyHomePage(title: 'diKapo App - für Mama ♥');
+      _screen = new MyHomePage(title: "diKapo App - für Mama ♥");
     });
   }
 }

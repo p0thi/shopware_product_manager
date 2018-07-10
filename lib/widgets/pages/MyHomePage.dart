@@ -101,10 +101,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text(widget.title),
+          title: Text(widget.title),
         ),
         body: RefreshIndicator(
           child: new ListView(
+            padding: EdgeInsets.all(Util.relWidth(context, 1.0)),
             children: getProductWidgets(),
           ),
           onRefresh: () async {

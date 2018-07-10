@@ -20,7 +20,6 @@ class ProductPreview extends StatefulWidget {
 
 class _ProductPreviewState extends State<ProductPreview>
     with TickerProviderStateMixin {
-  String imageUrl;
   bool imageAvailable;
   bool isExpanded;
   TextStyle expandedTextStyle;
@@ -38,13 +37,10 @@ class _ProductPreviewState extends State<ProductPreview>
     fetchImage();
   }
 
-  void fetchImage() {
-    if (!imageAvailable) return;
-    ImageData image = widget._product.imageDatas[0];
-    if (mounted)
-      setState(() {
-        imageUrl = image.thumbnailUrl;
-      });
+  ImageProvider fetchImage() {
+    if (!imageAvailable) return AssetImage("assets/1x1.png");
+//    ImageData image = widget._product.imageDatas[0];
+    return widget._product.imageDatas[0].thumbnail;
   }
 
   @override
@@ -81,11 +77,8 @@ class _ProductPreviewState extends State<ProductPreview>
               width: 80.0,
               height: 80.0,
               decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: imageUrl != null
-                          ? NetworkImage(imageUrl)
-                          : AssetImage("assets/1x1.png"),
-                      fit: BoxFit.cover),
+                  image:
+                      DecorationImage(image: fetchImage(), fit: BoxFit.cover),
                   borderRadius: BorderRadius.all(Radius.circular(50.0)),
                   border: Border.all(
                       width: Util.relWidth(context, 1.0),
@@ -241,7 +234,9 @@ class _ProductPreviewState extends State<ProductPreview>
                 )),
           ),
         ),
-        Divider()
+        Divider(
+          height: Util.relHeight(context, 1.0),
+        )
       ],
     );
   }
