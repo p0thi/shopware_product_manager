@@ -96,8 +96,8 @@ class _ProductPreviewState extends State<ProductPreview>
                   child: Material(
                       borderRadius: BorderRadius.all(Radius.circular(50.0)),
                       child: Container(
-                        height: Util.relWidth(context, 4.5),
-                        width: Util.relWidth(context, 4.5),
+                        height: Util.relWidth(context, 5.5),
+                        width: Util.relWidth(context, 5.5),
                       ),
                       color: widget._product.quantity < 1
                           ? Colors.red

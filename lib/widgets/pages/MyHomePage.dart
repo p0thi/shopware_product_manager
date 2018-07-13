@@ -21,13 +21,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+  FilterMethod filterMethod;
   static const List<IconData> fabIcons = const [
+    Icons.sort,
     Icons.refresh,
     Icons.add,
   ];
   static const Map<int, String> fabTooltips = const {
-    0: "Aktualisieren",
-    1: "Neuen Artikel anlegen",
+    0: "Artikel sortieren",
+    1: "Aktualisieren",
+    2: "Neuen Artikel anlegen",
   };
   AnimationController animationController;
   List<Product> _products = List();
@@ -66,8 +69,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               .then((product) {
             setState(() {
               _products.add(product);
-              _products.sort((Product a, Product b) =>
-                  (a.releaseDate.compareTo(b.releaseDate)) * -1);
+              _products.sort(_sortList);
+
               _productCount--;
               if (_products.length == parsedRequest["data"].length) {
                 _stillLoading = false;
@@ -77,6 +80,21 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         }
       });
     });
+  }
+
+  int _sortList(Product a, Product b) {
+    switch (filterMethod) {
+      case FilterMethod.release_date:
+        return b.releaseDate.compareTo(a.releaseDate);
+      case FilterMethod.availability:
+        int result = a.quantity.compareTo(b.quantity);
+        return result;
+      case FilterMethod.name:
+        return a.name.compareTo(b.name) * -1;
+      case FilterMethod.change_date:
+        return b.changedDate.compareTo(a.changedDate);
+    }
+    return 0;
   }
 
   List<Widget> getProductWidgets() {
@@ -136,9 +154,20 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   onPressed: () {
                     switch (index) {
                       case 0:
-                        fetchProducts();
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return SimpleDialog(
+                                title: Center(
+                                    child: Text("Liste sortieren nach:")),
+                                children: getSortItemList(),
+                              );
+                            });
                         break;
                       case 1:
+                        fetchProducts();
+                        break;
+                      case 2:
                         Navigator
                             .of(context)
                             .push(MaterialPageRoute(builder: (context) {
@@ -183,4 +212,44 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             ),
         ));
   }
+
+  List<Widget> getSortItemList() {
+    List<Widget> result = List();
+    for (FilterMethod method in FilterMethod.values) {
+      result.add(Padding(
+        padding: EdgeInsets.all(Util.relHeight(context, 2.0)),
+        child: Center(
+            child: GestureDetector(
+          child: Text(
+            method.description,
+            style: TextStyle(fontSize: 16.0),
+          ),
+          onTap: () {
+            setState(() {
+              filterMethod = method;
+              _products.sort(_sortList);
+            });
+            Navigator.of(context).pop();
+          },
+        )),
+      ));
+    }
+    return result;
+  }
+}
+
+class FilterMethod {
+  static const release_date =
+      const FilterMethod._("Datum der Veröffentlichung");
+  static const change_date = const FilterMethod._("Datum der letzten Änderung");
+  static const name = const FilterMethod._("Name");
+  static const availability = const FilterMethod._("Verfügbarkeit");
+  static const price = const FilterMethod._("Preis");
+
+  static get values => [release_date, change_date, name, availability, price];
+
+  String get description => _description;
+  final String _description;
+
+  const FilterMethod._(this._description);
 }
