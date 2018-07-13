@@ -73,20 +73,39 @@ class _ProductPreviewState extends State<ProductPreview>
             ),
             leading:
 //          CircleAvatar(radius: 40.0, backgroundImage: NetworkImage(_imageUrl)),
+                Stack(
+              children: <Widget>[
                 Container(
-              width: 80.0,
-              height: 80.0,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: fetchImage().image, fit: BoxFit.cover),
-                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                  border: Border.all(
-                      width: Util.relWidth(context, 1.0),
+                  width: 80.0,
+                  height: 80.0,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: fetchImage().image, fit: BoxFit.cover),
+                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
+//                  border: Border.all(
+//                      width: Util.relWidth(context, 1.0),
+//                      color: widget._product.quantity < 1
+//                          ? Colors.red
+//                          : !widget._product.isActive
+//                              ? Colors.orange
+//                              : Colors.green)
+                  ),
+                ),
+                Positioned(
+                  right: .0,
+                  child: Material(
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                      child: Container(
+                        height: Util.relWidth(context, 4.5),
+                        width: Util.relWidth(context, 4.5),
+                      ),
                       color: widget._product.quantity < 1
                           ? Colors.red
                           : !widget._product.isActive
                               ? Colors.orange
-                              : Colors.green)),
+                              : Colors.green),
+                ),
+              ],
             ),
             contentPadding: new EdgeInsets.only(
                 top: Util.relWidth(context, 3.3),
