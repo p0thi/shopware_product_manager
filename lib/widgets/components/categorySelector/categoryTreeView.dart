@@ -48,10 +48,13 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
                       return Material(
                         elevation: .5,
                         child: Center(
-                          child: Text(
-                            category.name,
-                            style:
-                                TextStyle(color: Theme.of(context).accentColor),
+                          child: FittedBox(
+                            fit: BoxFit.contain,
+                            child: Text(
+                              category.name,
+                              style: TextStyle(
+                                  color: Theme.of(context).accentColor),
+                            ),
                           ),
                         ),
                       );

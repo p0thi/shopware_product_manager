@@ -49,79 +49,88 @@ class _ProductPreviewState extends State<ProductPreview>
   }
 
   @override
+  void deactivate() {
+    super.deactivate();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              isExpanded = !isExpanded;
-            });
-          },
-          child: ListTile(
-            title: Center(
-              child: new Text(
-                widget._product.name,
-                style: new TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                    color: widget._sortingMethod == SortingMethod.name
-                        ? highlightColor
-                        : null),
-              ),
-            ),
-            subtitle: Column(
-              children: <Widget>[
-                new Text(
-                  "Veröffentlicht am "
-                      "${widget._product.releaseDate.day}."
-                      "${widget._product.releaseDate.month}."
-                      "${widget._product.releaseDate.year}",
-                  style: TextStyle(
-                      color: widget._sortingMethod == SortingMethod.release_date
+    return Container(
+      color: Theme.of(context).cardColor,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                isExpanded = !isExpanded;
+              });
+            },
+            child: ListTile(
+              title: Center(
+                child: new Text(
+                  widget._product.name,
+                  style: new TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: widget._sortingMethod == SortingMethod.name
                           ? highlightColor
                           : null),
                 ),
-                new Text(
-                  "Noch ${widget._product.quantity} verfügbar",
-                  style: TextStyle(
-                      color: widget._product.quantity <= 0 ? Colors.red : null),
-                ),
-                widget._sortingMethod == SortingMethod.price
-                    ? Text(
-                        "Preis: ${widget._product.price}€",
-                        style: TextStyle(color: highlightColor),
-                      )
-                    : Container(),
-                widget._sortingMethod == SortingMethod.change_date
-                    ? Text(
-                        "Geändert am "
-                            "${widget._product.changedDate.day}."
-                            "${widget._product.changedDate.month}."
-                            "${widget._product.changedDate.year}",
-                        style: TextStyle(color: highlightColor),
-                      )
-                    : Container(),
-                widget._sortingMethod == SortingMethod.availability
-                    ? Text(
-                        "Aktiv: ${widget._product.isActive ? "Ja" : "Nein"}",
-                        style: TextStyle(color: highlightColor),
-                      )
-                    : Container(),
-              ],
-            ),
-            leading:
+              ),
+              subtitle: Column(
+                children: <Widget>[
+                  new Text(
+                    "Veröffentlicht am "
+                        "${widget._product.releaseDate.day}."
+                        "${widget._product.releaseDate.month}."
+                        "${widget._product.releaseDate.year}",
+                    style: TextStyle(
+                        color:
+                            widget._sortingMethod == SortingMethod.release_date
+                                ? highlightColor
+                                : null),
+                  ),
+                  new Text(
+                    "Noch ${widget._product.quantity} verfügbar",
+                    style: TextStyle(
+                        color:
+                            widget._product.quantity <= 0 ? Colors.red : null),
+                  ),
+                  widget._sortingMethod == SortingMethod.price
+                      ? Text(
+                          "Preis: ${widget._product.price}€",
+                          style: TextStyle(color: highlightColor),
+                        )
+                      : Container(),
+                  widget._sortingMethod == SortingMethod.change_date
+                      ? Text(
+                          "Geändert am "
+                              "${widget._product.changedDate.day}."
+                              "${widget._product.changedDate.month}."
+                              "${widget._product.changedDate.year}",
+                          style: TextStyle(color: highlightColor),
+                        )
+                      : Container(),
+                  widget._sortingMethod == SortingMethod.availability
+                      ? Text(
+                          "Aktiv: ${widget._product.isActive ? "Ja" : "Nein"}",
+                          style: TextStyle(color: highlightColor),
+                        )
+                      : Container(),
+                ],
+              ),
+              leading:
 //          CircleAvatar(radius: 40.0, backgroundImage: NetworkImage(_imageUrl)),
-                Stack(
-              children: <Widget>[
-                Container(
-                  width: 80.0,
-                  height: 80.0,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: fetchImage().image, fit: BoxFit.cover),
-                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                  Stack(
+                children: <Widget>[
+                  Container(
+                    width: 80.0,
+                    height: 80.0,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: fetchImage().image, fit: BoxFit.cover),
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
 //                  border: Border.all(
 //                      width: Util.relWidth(context, 1.0),
 //                      color: widget._product.quantity < 1
@@ -129,174 +138,175 @@ class _ProductPreviewState extends State<ProductPreview>
 //                          : !widget._product.isActive
 //                              ? Colors.orange
 //                              : Colors.green)
-                  ),
-                ),
-                Positioned(
-                  right: .0,
-                  child: Material(
-                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                      child: Container(
-                        height: Util.relWidth(context, 5.5),
-                        width: Util.relWidth(context, 5.5),
-                      ),
-                      color: widget._product.quantity < 1
-                          ? Colors.red
-                          : !widget._product.isActive
-                              ? Colors.orange
-                              : Colors.green),
-                ),
-              ],
-            ),
-            contentPadding: new EdgeInsets.only(
-                top: Util.relWidth(context, 3.3),
-                right: Util.relWidth(context, 1.3),
-                bottom: Util.relWidth(context, 3.3),
-                left: Util.relWidth(context, 1.7)),
-            trailing: PopupMenuButton<_Choice>(
-              onSelected: (choice) {
-                _select(context, choice);
-              },
-              itemBuilder: (context) {
-                return _Choice.choices.map((choice) {
-                  return PopupMenuItem<_Choice>(
-                    value: choice,
-                    child: Text(choice.name),
-                  );
-                }).toList();
-              },
-            ),
-          ),
-        ),
-        Container(
-          alignment: FractionalOffset.topCenter,
-          child: AnimatedSize(
-            duration: Duration(milliseconds: 300),
-            vsync: this,
-            alignment: Alignment.topCenter,
-            curve: Curves.easeOut,
-            child: Container(
-                height: isExpanded ? null : .0,
-                child: Padding(
-                  padding: EdgeInsets.all(Util.relWidth(context, 2.0)),
-                  child: Card(
-                    elevation: 1.0,
-                    child: Container(
-                      margin: EdgeInsets.all(Util.relWidth(context, 2.0)),
-                      child: Table(
-                        columnWidths: {
-                          0: FractionColumnWidth(.25),
-                          1: FractionColumnWidth(.22),
-                          2: FractionColumnWidth(.28),
-                          3: FractionColumnWidth(.25),
-                        },
-                        children: <TableRow>[
-                          TableRow(children: <Widget>[
-                            Padding(
-                              padding: tableRowPadding,
-                              child: Text(
-                                "Preis:",
-                                style: expandedTextStyle,
-                              ),
-                            ),
-                            Padding(
-                              padding: tableRowPadding,
-                              child: Text(
-                                "${widget._product.price} €",
-                                style: TextStyle(color: Colors.green),
-                              ),
-                            ),
-                            Padding(
-                              padding: tableRowPadding,
-                              child: Text(
-                                "Fake Preis:",
-                                style: expandedTextStyle,
-                              ),
-                            ),
-                            Padding(
-                              padding: tableRowPadding,
-                              child: Text(
-                                "${widget._product.fakePrice != null
-                                      && widget._product.fakePrice != widget._product.price
-                                      ? widget._product.fakePrice
-                                      : "----"} €",
-                                style: TextStyle(
-                                    color: Colors.red,
-                                    decoration: TextDecoration.lineThrough),
-                              ),
-                            )
-                          ]),
-                          TableRow(children: <Widget>[
-                            Padding(
-                              padding: tableRowPadding,
-                              child: Text(
-                                "Bilder:",
-                                style: expandedTextStyle,
-                              ),
-                            ),
-                            Padding(
-                              padding: tableRowPadding,
-                              child:
-                                  Text("${widget._product.imageDatas.length}"),
-                            ),
-                            Padding(
-                              padding: tableRowPadding,
-                              child: Text(
-                                "ArtNr:",
-                                style: expandedTextStyle,
-                              ),
-                            ),
-                            Padding(
-                              padding: tableRowPadding,
-                              child: Text(
-                                "${widget._product.artNr}",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                          ]),
-                          TableRow(children: <Widget>[
-                            Padding(
-                              padding: tableRowPadding,
-                              child: Text(
-                                "Geändert:",
-                                style: expandedTextStyle,
-                              ),
-                            ),
-                            Padding(
-                              padding: tableRowPadding,
-                              child: Text(
-                                  "${widget._product.changedDate.day}.${widget._product.changedDate.month}.${widget._product.changedDate.year}"),
-                            ),
-                            Padding(
-                              padding: tableRowPadding,
-                              child: Text(
-                                "Aktiv:",
-                                style: expandedTextStyle,
-                              ),
-                            ),
-                            Padding(
-                              padding: tableRowPadding,
-                              child: widget._product.isActive
-                                  ? Text(
-                                      "Ja",
-                                      style: TextStyle(color: Colors.green),
-                                    )
-                                  : Text(
-                                      "Nein",
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                            ),
-                          ])
-                        ],
-                      ),
                     ),
                   ),
-                )),
+                  Positioned(
+                    right: .0,
+                    child: Material(
+                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                        child: Container(
+                          height: Util.relWidth(context, 5.5),
+                          width: Util.relWidth(context, 5.5),
+                        ),
+                        color: widget._product.quantity < 1
+                            ? Colors.red
+                            : !widget._product.isActive
+                                ? Colors.orange
+                                : Colors.green),
+                  ),
+                ],
+              ),
+              contentPadding: new EdgeInsets.only(
+                  top: Util.relWidth(context, 3.3),
+                  right: Util.relWidth(context, 1.3),
+                  bottom: Util.relWidth(context, 3.3),
+                  left: Util.relWidth(context, 1.7)),
+              trailing: PopupMenuButton<_Choice>(
+                onSelected: (choice) {
+                  _select(context, choice);
+                },
+                itemBuilder: (context) {
+                  return _Choice.choices.map((choice) {
+                    return PopupMenuItem<_Choice>(
+                      value: choice,
+                      child: Text(choice.name),
+                    );
+                  }).toList();
+                },
+              ),
+            ),
           ),
-        ),
-        Divider(
-          height: Util.relHeight(context, 1.0),
-        )
-      ],
+          Container(
+            alignment: FractionalOffset.topCenter,
+            child: AnimatedSize(
+              duration: Duration(milliseconds: 300),
+              vsync: this,
+              alignment: Alignment.topCenter,
+              curve: Curves.easeOut,
+              child: Container(
+                  height: isExpanded ? null : .0,
+                  child: Padding(
+                    padding: EdgeInsets.all(Util.relWidth(context, 2.0)),
+                    child: Card(
+                      elevation: 1.0,
+                      child: Container(
+                        margin: EdgeInsets.all(Util.relWidth(context, 2.0)),
+                        child: Table(
+                          columnWidths: {
+                            0: FractionColumnWidth(.25),
+                            1: FractionColumnWidth(.22),
+                            2: FractionColumnWidth(.28),
+                            3: FractionColumnWidth(.25),
+                          },
+                          children: <TableRow>[
+                            TableRow(children: <Widget>[
+                              Padding(
+                                padding: tableRowPadding,
+                                child: Text(
+                                  "Preis:",
+                                  style: expandedTextStyle,
+                                ),
+                              ),
+                              Padding(
+                                padding: tableRowPadding,
+                                child: Text(
+                                  "${widget._product.price} €",
+                                  style: TextStyle(color: Colors.green),
+                                ),
+                              ),
+                              Padding(
+                                padding: tableRowPadding,
+                                child: Text(
+                                  "Fake Preis:",
+                                  style: expandedTextStyle,
+                                ),
+                              ),
+                              Padding(
+                                padding: tableRowPadding,
+                                child: Text(
+                                  "${widget._product.fakePrice != null
+                                        && widget._product.fakePrice != widget._product.price
+                                        ? widget._product.fakePrice
+                                        : "----"} €",
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      decoration: TextDecoration.lineThrough),
+                                ),
+                              )
+                            ]),
+                            TableRow(children: <Widget>[
+                              Padding(
+                                padding: tableRowPadding,
+                                child: Text(
+                                  "Bilder:",
+                                  style: expandedTextStyle,
+                                ),
+                              ),
+                              Padding(
+                                padding: tableRowPadding,
+                                child: Text(
+                                    "${widget._product.imageDatas.length}"),
+                              ),
+                              Padding(
+                                padding: tableRowPadding,
+                                child: Text(
+                                  "ArtNr:",
+                                  style: expandedTextStyle,
+                                ),
+                              ),
+                              Padding(
+                                padding: tableRowPadding,
+                                child: Text(
+                                  "${widget._product.artNr}",
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ),
+                            ]),
+                            TableRow(children: <Widget>[
+                              Padding(
+                                padding: tableRowPadding,
+                                child: Text(
+                                  "Geändert:",
+                                  style: expandedTextStyle,
+                                ),
+                              ),
+                              Padding(
+                                padding: tableRowPadding,
+                                child: Text(
+                                    "${widget._product.changedDate.day}.${widget._product.changedDate.month}.${widget._product.changedDate.year}"),
+                              ),
+                              Padding(
+                                padding: tableRowPadding,
+                                child: Text(
+                                  "Aktiv:",
+                                  style: expandedTextStyle,
+                                ),
+                              ),
+                              Padding(
+                                padding: tableRowPadding,
+                                child: widget._product.isActive
+                                    ? Text(
+                                        "Ja",
+                                        style: TextStyle(color: Colors.green),
+                                      )
+                                    : Text(
+                                        "Nein",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                              ),
+                            ])
+                          ],
+                        ),
+                      ),
+                    ),
+                  )),
+            ),
+          ),
+          Divider(
+            height: Util.relHeight(context, 1.0),
+          )
+        ],
+      ),
     );
   }
 

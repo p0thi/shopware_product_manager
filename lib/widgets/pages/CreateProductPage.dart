@@ -44,6 +44,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
   List<ImageData> _imagesToRemove = new List();
   Function _httpFunction;
 
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
   TextEditingController _titleController = new TextEditingController();
   TextEditingController _descriptionController = new TextEditingController();
   PriceSelector _priceSelector;
@@ -93,6 +95,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
         return Future.value(false);
       },
       child: new Scaffold(
+        key: _scaffoldKey,
         appBar: new AppBar(
           title: Row(
             children: <Widget>[
@@ -186,10 +189,25 @@ class _CreateProductPageState extends State<CreateProductPage> {
           onPressed: () {
             if (_saving) return;
             if (_photoComposer.currentProcessingPicturesCount != 0) {
-              Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text("Es werden noch Bilder verarbeitet..."),
-                    backgroundColor: Colors.red,
-                  ));
+              _scaffoldKey.currentState.showSnackBar(SnackBar(
+                content: Text("Es werden noch Bilder verarbeitet..."),
+                backgroundColor: Colors.red,
+                duration: Duration(seconds: 5),
+              ));
+              setState(() {
+                _currentStep = 0;
+              });
+              return;
+            }
+            if (_titleController.text == null || _titleController.text == "") {
+              _scaffoldKey.currentState.showSnackBar(SnackBar(
+                content: Text("Es muss ein Titel eingegeben werden!"),
+                backgroundColor: Colors.red,
+                duration: Duration(seconds: 5),
+              ));
+              setState(() {
+                _currentStep = 1;
+              });
               return;
             }
             safeProduct(context);
