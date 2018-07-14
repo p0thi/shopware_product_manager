@@ -2,6 +2,7 @@ import 'package:diKapo/models/imageData.dart';
 import 'package:diKapo/models/product.dart';
 import 'package:diKapo/util/Util.dart';
 import 'package:diKapo/widgets/pages/CreateProductPage.dart';
+import 'package:diKapo/widgets/pages/MyHomePage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,8 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ProductPreview extends StatefulWidget {
   Product _product;
   VoidCallback _onProductsChanged;
+  SortingMethod _sortingMethod;
 
-  ProductPreview(this._product, {@required VoidCallback onProductsChanged}) {
+  ProductPreview(this._product, this._sortingMethod,
+      {@required VoidCallback onProductsChanged}) {
     this._onProductsChanged = onProductsChanged;
   }
 
@@ -20,6 +23,8 @@ class ProductPreview extends StatefulWidget {
 
 class _ProductPreviewState extends State<ProductPreview>
     with TickerProviderStateMixin {
+  static const Color highlightColor = Color.fromRGBO(0, 47, 124, 1.0);
+//  static const Color highlightColor = Colors.blueGrey;
   bool imageAvailable;
   bool isExpanded;
   TextStyle expandedTextStyle;
@@ -58,17 +63,52 @@ class _ProductPreviewState extends State<ProductPreview>
             title: Center(
               child: new Text(
                 widget._product.name,
-                style:
-                    new TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                style: new TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: widget._sortingMethod == SortingMethod.name
+                        ? highlightColor
+                        : null),
               ),
             ),
             subtitle: Column(
               children: <Widget>[
-                new Text("Noch ${widget._product.quantity} verfügbar."),
-                new Text("Veröffentlicht am "
-                    "${widget._product.releaseDate.day}."
-                    "${widget._product.releaseDate.month}."
-                    "${widget._product.releaseDate.year}"),
+                new Text(
+                  "Veröffentlicht am "
+                      "${widget._product.releaseDate.day}."
+                      "${widget._product.releaseDate.month}."
+                      "${widget._product.releaseDate.year}",
+                  style: TextStyle(
+                      color: widget._sortingMethod == SortingMethod.release_date
+                          ? highlightColor
+                          : null),
+                ),
+                new Text(
+                  "Noch ${widget._product.quantity} verfügbar",
+                  style: TextStyle(
+                      color: widget._product.quantity <= 0 ? Colors.red : null),
+                ),
+                widget._sortingMethod == SortingMethod.price
+                    ? Text(
+                        "Preis: ${widget._product.price}€",
+                        style: TextStyle(color: highlightColor),
+                      )
+                    : Container(),
+                widget._sortingMethod == SortingMethod.change_date
+                    ? Text(
+                        "Geändert am "
+                            "${widget._product.changedDate.day}."
+                            "${widget._product.changedDate.month}."
+                            "${widget._product.changedDate.year}",
+                        style: TextStyle(color: highlightColor),
+                      )
+                    : Container(),
+                widget._sortingMethod == SortingMethod.availability
+                    ? Text(
+                        "Aktiv: ${widget._product.isActive ? "Ja" : "Nein"}",
+                        style: TextStyle(color: highlightColor),
+                      )
+                    : Container(),
               ],
             ),
             leading:

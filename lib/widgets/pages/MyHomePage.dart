@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:diKapo/models/product.dart';
 import 'package:diKapo/util/Util.dart';
@@ -21,7 +22,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
-  FilterMethod filterMethod;
+  SortingMethod sortingMethod = SortingMethod.release_date;
   static const List<IconData> fabIcons = const [
     Icons.sort,
     Icons.refresh,
@@ -83,16 +84,18 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   int _sortList(Product a, Product b) {
-    switch (filterMethod) {
-      case FilterMethod.release_date:
+    switch (sortingMethod) {
+      case SortingMethod.release_date:
         return b.releaseDate.compareTo(a.releaseDate);
-      case FilterMethod.availability:
+      case SortingMethod.availability:
         int result = a.quantity.compareTo(b.quantity);
         return result;
-      case FilterMethod.name:
+      case SortingMethod.name:
         return a.name.compareTo(b.name) * -1;
-      case FilterMethod.change_date:
+      case SortingMethod.change_date:
         return b.changedDate.compareTo(a.changedDate);
+      case SortingMethod.price:
+        return b.price.compareTo(a.price);
     }
     return 0;
   }
@@ -100,8 +103,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   List<Widget> getProductWidgets() {
     List<Widget> result = new List();
     if (_products == null) return result;
+    result.add(
+      Container(height: Util.relHeight(context, 7.0)),
+    );
     for (Product product in _products) {
-      result.add(new ProductPreview(product, onProductsChanged: fetchProducts));
+      result.add(new ProductPreview(product, sortingMethod,
+          onProductsChanged: fetchProducts));
     }
     if (_stillLoading) {
       if (_productCount > 0) {
@@ -112,6 +119,9 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         result.add(ProductPreviewPlaceholder());
       }
     }
+    result.add(
+      Container(height: Util.relHeight(context, 15.0)),
+    );
     return result;
   }
 
@@ -121,15 +131,44 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         appBar: new AppBar(
           title: Text(widget.title),
         ),
-        body: RefreshIndicator(
-          child: new ListView(
-            padding: EdgeInsets.all(Util.relWidth(context, 1.0)),
-            children: getProductWidgets(),
-          ),
-          onRefresh: () async {
-            Future.delayed(Duration(milliseconds: 1));
-            fetchProducts();
-          },
+        body: Stack(
+          children: <Widget>[
+            Positioned.fill(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  Future.delayed(Duration(milliseconds: 1));
+                  fetchProducts();
+                },
+                child: new ListView(
+                  padding: EdgeInsets.all(Util.relWidth(context, 1.0)),
+                  children: getProductWidgets(),
+                ),
+              ),
+            ),
+            Positioned(
+              top: .0,
+              left: .0,
+              right: .0,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                child: Container(
+                  color: Colors.grey.shade300.withOpacity(.5),
+                  child: GestureDetector(
+                    onTap: () => showSortDialog(),
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(Util.relHeight(context, 1.5)),
+                        child: Text(
+                          "Sortiert nach ${sortingMethod.description}:",
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
         floatingActionButton: Column(
           mainAxisSize: MainAxisSize.min,
@@ -154,15 +193,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                   onPressed: () {
                     switch (index) {
                       case 0:
-                        showDialog(
-                            context: context,
-                            builder: (context) {
-                              return SimpleDialog(
-                                title: Center(
-                                    child: Text("Liste sortieren nach:")),
-                                children: getSortItemList(),
-                              );
-                            });
+                        showSortDialog();
                         break;
                       case 1:
                         fetchProducts();
@@ -213,9 +244,20 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         ));
   }
 
-  List<Widget> getSortItemList() {
+  void showSortDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Center(child: Text("Liste sortieren nach:")),
+            children: getSortedItemList(),
+          );
+        });
+  }
+
+  List<Widget> getSortedItemList() {
     List<Widget> result = List();
-    for (FilterMethod method in FilterMethod.values) {
+    for (SortingMethod method in SortingMethod.values) {
       result.add(Padding(
         padding: EdgeInsets.all(Util.relHeight(context, 2.0)),
         child: Center(
@@ -226,7 +268,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           ),
           onTap: () {
             setState(() {
-              filterMethod = method;
+              sortingMethod = method;
               _products.sort(_sortList);
             });
             Navigator.of(context).pop();
@@ -238,18 +280,19 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 }
 
-class FilterMethod {
+class SortingMethod {
   static const release_date =
-      const FilterMethod._("Datum der Veröffentlichung");
-  static const change_date = const FilterMethod._("Datum der letzten Änderung");
-  static const name = const FilterMethod._("Name");
-  static const availability = const FilterMethod._("Verfügbarkeit");
-  static const price = const FilterMethod._("Preis");
+      const SortingMethod._("Datum der Veröffentlichung");
+  static const change_date =
+      const SortingMethod._("Datum der letzten Änderung");
+  static const name = const SortingMethod._("Name");
+  static const availability = const SortingMethod._("Verfügbarkeit");
+  static const price = const SortingMethod._("Preis");
 
   static get values => [release_date, change_date, name, availability, price];
 
   String get description => _description;
   final String _description;
 
-  const FilterMethod._(this._description);
+  const SortingMethod._(this._description);
 }
