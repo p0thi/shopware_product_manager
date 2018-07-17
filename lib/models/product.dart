@@ -61,6 +61,10 @@ class Product {
               ? int.parse(category["articleCount"])
               : null));
     }
+    result._categories.sort((a, b) {
+      if (a.isLeaf) return -1;
+      return a.name.compareTo(b.name);
+    });
 
     try {
       for (var image in map["data"]["images"]) {

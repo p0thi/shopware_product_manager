@@ -37,6 +37,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
   Product _product;
 
   bool _saving = false;
+  String savingStatus = "initialisiere...";
   bool changed = false;
   bool saved = false;
   double _savingPercent = .1;
@@ -167,6 +168,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                             EdgeInsets.only(top: Util.relWidth(context, 10.0)),
                         child: Column(
                           children: <Widget>[
+                            Text("Speichern..."),
                             Padding(
                               padding:
                                   EdgeInsets.all(Util.relWidth(context, 13.0)),
@@ -175,7 +177,8 @@ class _CreateProductPageState extends State<CreateProductPage> {
                                 value: _savingPercent,
                               ),
                             ),
-                            Text("Speichern...")
+                            Divider(),
+                            Text(savingStatus),
                           ],
                         ),
                       )),
@@ -210,7 +213,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
               });
               return;
             }
-            safeProduct(context);
+            saveProduct(context);
           },
           tooltip: 'Speichern',
           child: new Icon(Icons.save),
@@ -220,9 +223,13 @@ class _CreateProductPageState extends State<CreateProductPage> {
   }
 
   Future<int> safeMedia(ImageData imageData, SharedPreferences prefs) async {
+    String body =
+        json.encode(imageData.getShopwareObject(_titleController.text));
+
     http.Response response = await http.post("${Util.baseApiUrl}media",
         headers: Util.httpHeaders(prefs.get("username"), prefs.get("pass")),
-        body: json.encode(imageData.getShopwareObject(_titleController.text)));
+        body: body);
+
     int id;
     try {
       id = json.decode(response.body)["data"]["id"];
@@ -239,7 +246,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
     print(response.body);
   }
 
-  void safeProduct(BuildContext myContext) async {
+  void saveProduct(BuildContext myContext) async {
     setState(() {
       _saving = true;
     });
@@ -251,6 +258,9 @@ class _CreateProductPageState extends State<CreateProductPage> {
 
     List<dynamic> shopwareImages = new List();
     List<int> newUploadedImages = List();
+    setState(() {
+      savingStatus = "Verarbietet Bilder...";
+    });
     for (ImageData imageData in _product.imageDatas) {
       int id;
       if (imageData.image == null) {
@@ -275,7 +285,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
     }
 
     Map<String, dynamic> articleBody = {
-      "name": _titleController.text,
+      "name": _titleController.text.replaceAll("\n", " "),
       "taxId": 1,
       "active": true,
 //      "active": _availabilitySelector.isAvailable,
@@ -404,6 +414,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                     fontWeight: FontWeight.bold),
                 controller: _titleController,
                 onChanged: inputsChanged,
+                maxLines: null,
               ),
             ),
           ),
