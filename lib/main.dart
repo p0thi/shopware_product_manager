@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:diKapo/util/Util.dart';
 import 'package:diKapo/widgets/pages/AuthPage.dart';
 import 'package:diKapo/widgets/pages/MyHomePage.dart';
 import 'package:flutter/material.dart';
@@ -67,9 +68,11 @@ class _MyAppState extends State<MyApp> {
     final prefs = await SharedPreferences.getInstance();
     String username = prefs.getString("username") ?? null;
     String pass = prefs.get("pass") ?? null;
+    bool isAuthenticated = await Util.checkCredentials(
+        prefs.getString("username"), prefs.getString("pass"));
 
     setState(() {
-      if (username == null || pass == null) {
+      if (username == null || pass == null || !isAuthenticated) {
         _screen = new AuthPage(() {
           setState(() {
             updateScreen();

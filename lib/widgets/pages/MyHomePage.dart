@@ -65,9 +65,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           _productCount = parsedRequest["data"].length;
         });
         for (var i = 0; i < parsedRequest["data"].length; i++) {
-          Product
-              .fromId(parsedRequest["data"][i]["id"].toString())
-              .then((product) {
+          Product.fromId(parsedRequest["data"][i]["id"].toString()).then(
+              (product) {
             setState(() {
               _products.add(product);
               _products.sort(_sortList);
@@ -77,8 +76,13 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 _stillLoading = false;
               }
             });
+          }, onError: (error) {
+            Util.showGeneralError();
           });
         }
+      }, onError: (error) {
+        print(error);
+        Util.showGeneralError();
       });
     });
   }

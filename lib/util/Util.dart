@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as dartImage;
 
@@ -27,12 +28,23 @@ class Util {
     return hex.encode(digest.bytes);
   }
 
+  static void showGeneralError() {
+    Fluttertoast.showToast(
+        msg: "FEHLER! Bitte Pascal bescheid sagen...",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 5,
+        bgcolor: "#e00000",
+        textcolor: "#ffffff");
+  }
+
   static Future<bool> checkCredentials(String username, String pass) async {
     http.Response res = await http.get("${baseApiUrl}version",
         headers: httpHeaders(username, pass));
     if (res.statusCode == 200) {
       return true;
     }
+    Util.showGeneralError();
     return false;
   }
 
