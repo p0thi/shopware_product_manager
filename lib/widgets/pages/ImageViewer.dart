@@ -41,7 +41,7 @@ class _ImageViewerState extends State<ImageViewer> {
                 ),
               ),
             ),
-            widget._image.thumbnail != null
+            widget._image.image == null
                 ? Padding(
                     padding: EdgeInsets.all(Util.relWidth(context, 10.0)),
                     child: Center(

@@ -12,6 +12,7 @@ class ImageData {
   String _imageBase64;
   String _thumbnailUrl;
   Image _image;
+
   ImageData(this._id, this._name, this._extension) {
     String hashString = "media/image/thumbnail/" +
         "${_name}_${thumbnailSize}x$thumbnailSize." +
