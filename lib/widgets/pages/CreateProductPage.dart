@@ -10,6 +10,7 @@ import 'package:diKapo/widgets/components/categorySelector/categoryTreeView.dart
 import 'package:diKapo/widgets/components/dateSelector.dart';
 import 'package:diKapo/widgets/components/photoComposer/photoComposer.dart';
 import 'package:diKapo/widgets/components/priceSelector.dart';
+import 'package:diKapo/widgets/components/propertySelector/propertySelector.dart';
 import 'package:diKapo/widgets/components/steps/customStepper.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -54,6 +55,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
   DateSelector _dateSelector;
   PhotoComposer _photoComposer;
   AvailabilitySelector _availabilitySelector;
+  PropertySelector _propertySelecor;
 
   int _currentStep = 0;
   List<CustomStep> _steps;
@@ -295,6 +297,9 @@ class _CreateProductPageState extends State<CreateProductPage> {
         return {"id": category.id};
       })),
       "descriptionLong": _descriptionController.text.replaceAll("\n", "<br>"),
+//      "propertyGroup": _product.getShopwareGroup(),
+      "filterGroupId": _product.activeGroup.id,
+      "propertyValues": _product.getShopwareValues(),
       "mainDetail": {
         "number":
             "${_product.artNr != null && _product.artNr != "" && !widget._newProduct
@@ -331,7 +336,6 @@ class _CreateProductPageState extends State<CreateProductPage> {
           _saving = false;
           saved = true;
         });
-        print(response.body);
         if (response.statusCode >= 200 && response.statusCode < 300) {
           Fluttertoast.showToast(
               msg: "Artikel erfolgreich gespeichert...",
@@ -346,6 +350,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.CENTER,
               timeInSecForIos: 2);
+          print(response.body);
           print(json.encode(articleBody));
           for (int id in newUploadedImages) {
             deleteMedia(id, prefs);
@@ -383,6 +388,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
         inputsChanged,
         initDate: widget._newProduct ? null : _product.releaseDate,
       );
+      _propertySelecor = PropertySelector(_product, inputsChanged);
       _photoComposer = PhotoComposer(
         _product,
         inputsChanged,
@@ -440,6 +446,10 @@ class _CreateProductPageState extends State<CreateProductPage> {
         CustomStep(
           title: Text("Kategorie"),
           content: _categoryTreeView,
+        ),
+        CustomStep(
+          title: Text("Eigenschaften"),
+          content: _propertySelecor,
         ),
         CustomStep(
           title: Text("Verfügbarkeit"),

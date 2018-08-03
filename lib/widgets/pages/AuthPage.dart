@@ -53,7 +53,7 @@ class _AuthPageState extends State<AuthPage> {
                     bool isAuthenticated = await Util.checkCredentials(
                         usernameController.text, passController.text);
                     if (!isAuthenticated) {
-                      // TODO
+                      Util.showGeneralError();
                       return;
                     }
                     SharedPreferences prefs =

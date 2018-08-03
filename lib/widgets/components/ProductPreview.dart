@@ -187,117 +187,149 @@ class _ProductPreviewState extends State<ProductPreview>
                   height: isExpanded ? null : .0,
                   child: Padding(
                     padding: EdgeInsets.all(Util.relWidth(context, 2.0)),
-                    child: Card(
-                      elevation: 1.0,
-                      child: Container(
-                        margin: EdgeInsets.all(Util.relWidth(context, 2.0)),
-                        child: Table(
-                          columnWidths: {
-                            0: FractionColumnWidth(.25),
-                            1: FractionColumnWidth(.22),
-                            2: FractionColumnWidth(.28),
-                            3: FractionColumnWidth(.25),
-                          },
-                          children: <TableRow>[
-                            TableRow(children: <Widget>[
-                              Padding(
-                                padding: tableRowPadding,
-                                child: Text(
-                                  "Preis:",
-                                  style: expandedTextStyle,
-                                ),
-                              ),
-                              Padding(
-                                padding: tableRowPadding,
-                                child: Text(
-                                  "${widget._product.price} €",
-                                  style: TextStyle(color: Colors.green),
-                                ),
-                              ),
-                              Padding(
-                                padding: tableRowPadding,
-                                child: Text(
-                                  "Fake Preis:",
-                                  style: expandedTextStyle,
-                                ),
-                              ),
-                              Padding(
-                                padding: tableRowPadding,
-                                child: Text(
-                                  "${widget._product.fakePrice != null
-                                        && widget._product.fakePrice != widget._product.price
-                                        ? widget._product.fakePrice
-                                        : "----"} €",
-                                  style: TextStyle(
-                                      color: Colors.red,
-                                      decoration: TextDecoration.lineThrough),
-                                ),
-                              )
-                            ]),
-                            TableRow(children: <Widget>[
-                              Padding(
-                                padding: tableRowPadding,
-                                child: Text(
-                                  "Bilder:",
-                                  style: expandedTextStyle,
-                                ),
-                              ),
-                              Padding(
-                                padding: tableRowPadding,
-                                child: Text(
-                                    "${widget._product.imageDatas.length}"),
-                              ),
-                              Padding(
-                                padding: tableRowPadding,
-                                child: Text(
-                                  "ArtNr:",
-                                  style: expandedTextStyle,
-                                ),
-                              ),
-                              Padding(
-                                padding: tableRowPadding,
-                                child: Text(
-                                  "${widget._product.artNr}",
-                                  style: TextStyle(color: Colors.grey),
-                                ),
-                              ),
-                            ]),
-                            TableRow(children: <Widget>[
-                              Padding(
-                                padding: tableRowPadding,
-                                child: Text(
-                                  "Geändert:",
-                                  style: expandedTextStyle,
-                                ),
-                              ),
-                              Padding(
-                                padding: tableRowPadding,
-                                child: Text(
-                                    "${widget._product.changedDate.day}.${widget._product.changedDate.month}.${widget._product.changedDate.year}"),
-                              ),
-                              Padding(
-                                padding: tableRowPadding,
-                                child: Text(
-                                  "Aktiv:",
-                                  style: expandedTextStyle,
-                                ),
-                              ),
-                              Padding(
-                                padding: tableRowPadding,
-                                child: widget._product.isActive
-                                    ? Text(
-                                        "Ja",
-                                        style: TextStyle(color: Colors.green),
-                                      )
-                                    : Text(
-                                        "Nein",
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                              ),
-                            ])
-                          ],
+                    child: Column(
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.all(Util.relWidth(context, 1.0)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              FlatButton(
+                                  child: Text("Bearbeiten"),
+                                  color: Colors.grey[200],
+                                  onPressed: () {
+                                    _select(context, _Choice.choices[0]);
+                                  }),
+                              FlatButton(
+                                  child: Text("Duplizieren"),
+                                  color: Colors.grey[200],
+                                  onPressed: () {
+                                    _select(context, _Choice.choices[1]);
+                                  }),
+                              FlatButton(
+                                  child: Text("Löschen"),
+                                  color: Colors.grey[200],
+                                  onPressed: () {
+                                    _select(context, _Choice.choices[2]);
+                                  }),
+                            ],
+                          ),
                         ),
-                      ),
+                        Card(
+                          elevation: 1.0,
+                          child: Container(
+                            margin: EdgeInsets.all(Util.relWidth(context, 2.0)),
+                            child: Table(
+                              columnWidths: {
+                                0: FractionColumnWidth(.25),
+                                1: FractionColumnWidth(.22),
+                                2: FractionColumnWidth(.28),
+                                3: FractionColumnWidth(.25),
+                              },
+                              children: <TableRow>[
+                                TableRow(children: <Widget>[
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: Text(
+                                      "Preis:",
+                                      style: expandedTextStyle,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: Text(
+                                      "${widget._product.price} €",
+                                      style: TextStyle(color: Colors.green),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: Text(
+                                      "Fake Preis:",
+                                      style: expandedTextStyle,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: Text(
+                                      "${widget._product.fakePrice != null
+                                            && widget._product.fakePrice != widget._product.price
+                                            ? widget._product.fakePrice
+                                            : "----"} €",
+                                      style: TextStyle(
+                                          color: Colors.red,
+                                          decoration:
+                                              TextDecoration.lineThrough),
+                                    ),
+                                  )
+                                ]),
+                                TableRow(children: <Widget>[
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: Text(
+                                      "Bilder:",
+                                      style: expandedTextStyle,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: Text(
+                                        "${widget._product.imageDatas.length}"),
+                                  ),
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: Text(
+                                      "ArtNr:",
+                                      style: expandedTextStyle,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: Text(
+                                      "${widget._product.artNr}",
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ),
+                                ]),
+                                TableRow(children: <Widget>[
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: Text(
+                                      "Geändert:",
+                                      style: expandedTextStyle,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: Text(
+                                        "${widget._product.changedDate.day}.${widget._product.changedDate.month}.${widget._product.changedDate.year}"),
+                                  ),
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: Text(
+                                      "Aktiv:",
+                                      style: expandedTextStyle,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: tableRowPadding,
+                                    child: widget._product.isActive
+                                        ? Text(
+                                            "Ja",
+                                            style:
+                                                TextStyle(color: Colors.green),
+                                          )
+                                        : Text(
+                                            "Nein",
+                                            style: TextStyle(color: Colors.red),
+                                          ),
+                                  ),
+                                ])
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
                     ),
                   )),
             ),
@@ -387,7 +419,7 @@ class _ProductPreviewState extends State<ProductPreview>
 
 class _Choice {
   static List<_Choice> choices = <_Choice>[
-    _Choice("Bearbeiten", 0), // edit-product TODO edit product
+    _Choice("Bearbeiten", 0), // edit-product
     _Choice("Duplizieren", 1), // duplicate-product
     _Choice("Löschen", 2),
   ];
