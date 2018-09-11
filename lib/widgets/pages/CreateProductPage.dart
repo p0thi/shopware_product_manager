@@ -300,6 +300,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
 //      "propertyGroup": _product.getShopwareGroup(),
       "filterGroupId": _product.activeGroup.id,
       "propertyValues": _product.getShopwareValues(),
+      "changed": DateTime.now().toIso8601String(),
       "mainDetail": {
         "number":
             "${_product.artNr != null && _product.artNr != "" && !widget._newProduct
