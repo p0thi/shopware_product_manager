@@ -76,7 +76,10 @@ class Product {
                     (100 + int.parse(result._tax.replaceAll("%", ""))))
                 .round() /
             100;
-        result._fakePrice = (priceUnit["pseudoPrice"] * 119).round() / 100;
+        result._fakePrice = (priceUnit["pseudoPrice"] *
+                    (100 + int.parse(result._tax.replaceAll("%", ""))))
+                .round() /
+            100;
         break;
       }
     }

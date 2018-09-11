@@ -38,8 +38,7 @@ class PropertyValue {
         PropertyValue("Größer", "1", false),
 
         // Material
-        PropertyValue("Schurwolle", "2", false),
-        PropertyValue("Merinowolle", "2", false),
+        PropertyValue("Reine Wolle (Merinowolle)", "2", false),
 
         // Zielgruppe
         PropertyValue("Frau", "4", false),

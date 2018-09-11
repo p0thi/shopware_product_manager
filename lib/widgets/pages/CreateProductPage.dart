@@ -342,7 +342,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.CENTER,
               timeInSecForIos: 2);
-          Navigator.of(context).pop(changed);
+          Navigator.of(context).pop(true);
         } else {
           Fluttertoast.showToast(
               msg:
