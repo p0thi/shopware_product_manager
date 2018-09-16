@@ -29,8 +29,8 @@ android {
         applicationId "pascalpothmann.de.flutterapp.dikapo"
         minSdkVersion 16
         targetSdkVersion 27
-        versionCode 18
-        versionName "0.18"
+        versionCode 19
+        versionName "0.19"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 

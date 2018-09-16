@@ -41,9 +41,9 @@ class PropertyValue {
         PropertyValue("Reine Wolle (Merinowolle)", "2", false),
 
         // Zielgruppe
-        PropertyValue("Frau", "4", false),
-        PropertyValue("Mann", "4", false),
-        PropertyValue("Kind", "4", false),
+        PropertyValue("Damen", "4", false),
+        PropertyValue("Herren", "4", false),
+        PropertyValue("Kinder", "4", false),
 
         // Modell
         PropertyValue("Nordwind", "7", false),

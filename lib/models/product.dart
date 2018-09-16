@@ -40,7 +40,10 @@ class Product {
     result._name = productMap["data"]["name"].toString();
     result._description = productMap["data"]["descriptionLong"]
         .toString()
-        .replaceAll("<br>", "\n");
+        .replaceAll("<br>", "\n")
+        .replaceAll("<\/br>", "\n")
+        .replaceAll("<p>", "")
+        .replaceAll("<\/p>", "");
     result._quantity = productMap["data"]["mainDetail"]["inStock"];
     result._artNr = productMap["data"]["mainDetail"]["number"];
     result._changedDate =
