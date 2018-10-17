@@ -1,7 +1,7 @@
 import 'package:diKapo/models/imageData.dart';
 import 'package:diKapo/util/Util.dart';
+import 'package:diKapo/widgets/components/photoViewer/photo_view.dart';
 import 'package:flutter/material.dart';
-import 'package:zoomable_image/zoomable_image.dart';
 
 class ImageViewer extends StatefulWidget {
   ImageData _image;
@@ -33,10 +33,11 @@ class _ImageViewerState extends State<ImageViewer> {
             Expanded(
               child: Material(
                 child: Container(
-                  child: ZoomableImage(
-                    _image.image,
-                    backgroundColor: Colors.white70,
-                    maxScale: 3.0,
+                  child: PhotoView(
+                    imageProvider: _image.image,
+                    backgroundColor: Colors.black,
+                    maxScale: 3,
+                    minScale: .2,
                   ),
                 ),
               ),
