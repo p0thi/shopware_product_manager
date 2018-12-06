@@ -34,8 +34,8 @@ class Util {
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 5,
-        bgcolor: "#e00000",
-        textcolor: "#ffffff");
+//        bgcolor: "#e00000",
+        textcolor: "#e00000");
   }
 
   static Future<bool> checkCredentials(String username, String pass) async {

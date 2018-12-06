@@ -36,7 +36,7 @@ class _ImageViewerState extends State<ImageViewer> {
                   child: PhotoView(
                     imageProvider: _image.image,
                     backgroundColor: Colors.black,
-                    maxScale: 3,
+                    maxScale: 3.0,
                     minScale: .2,
                   ),
                 ),
