@@ -4,8 +4,8 @@ import 'package:diKapo/widgets/components/categorySelector/activatableChip.dart'
 import 'package:flutter/material.dart';
 
 class CategoryTreeView extends StatefulWidget {
-  List<ProductCategory> _activeCategories;
-  Function _inputChanged;
+  final List<ProductCategory> _activeCategories;
+  final Function _inputChanged;
 
   CategoryTreeView(this._activeCategories, this._inputChanged);
 
@@ -112,7 +112,7 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
     super.initState();
     ProductCategory.getAllCategories().then((list) {
       setState(() {
-        _allCategories = list;
+        _allCategories = list.where((i) => ProductCategory.acceptableNames.contains(i.name)).toList();
       });
     });
   }
