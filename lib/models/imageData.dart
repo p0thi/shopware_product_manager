@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:diKapo/util/Util.dart';
@@ -36,10 +37,10 @@ class ImageData {
     this._thumbnailUrl = url;
   }
 
-  ImageData.withImage(Image image, String imageBase64) {
+  ImageData.withImage(File file/*, Image image, String imageBase64*/) {
 //    _imageFile = file;
-    _imageBase64 = imageBase64;
-    _image = image;
+    _imageBase64 = base64Encode(file.readAsBytesSync());
+    _image = Image.file(file);
   }
 
   dynamic getShopwareObject(String productTitle) {

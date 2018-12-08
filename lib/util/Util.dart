@@ -5,7 +5,9 @@ import 'dart:math';
 
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as dartImage;
@@ -13,7 +15,7 @@ import 'package:image/image.dart' as dartImage;
 class Util {
   static Map<String, String> httpHeaders(String username, String pass) {
     return {
-      HttpHeaders.AUTHORIZATION:
+      HttpHeaders.authorizationHeader:
           "Basic ${base64.encode(utf8.encode("$username:$pass"))}",
     };
   }
@@ -29,13 +31,24 @@ class Util {
   }
 
   static void showGeneralError() {
+    showCustomError("FEHLER! Eventuell Pascal bescheid sagen... 😌");
+  }
+
+  static void showCustomError(String msg) {
     Fluttertoast.showToast(
-        msg: "FEHLER! Bitte Pascal bescheid sagen...",
+        msg: msg,
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.CENTER,
         timeInSecForIos: 5,
-//        bgcolor: "#e00000",
         textcolor: "#e00000");
+  }
+
+  static void schowGeneralToast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 5);
   }
 
   static Future<bool> checkCredentials(String username, String pass) async {
@@ -92,6 +105,26 @@ class Util {
 //    return base64Encode(dartImage.encodePng(thumbnail)).toString();
     return base64Encode(dartImage.encodeJpg(thumbnail)).toString();
 //    return Image.memory(dartImage.encodeJpg(thumbnail, quality: 100));
+  }
+
+  static Future<File> cropImageNative(String filePath) async {
+    ImageProperties properties =
+        await FlutterNativeImage.getImageProperties(filePath);
+    int minDimension = min(properties.width, properties.height);
+    int maxDimension = max(properties.width, properties.height);
+    int startingPoint = ((maxDimension - minDimension) / 2).round();
+    int startX = 0;
+    int startY = 0;
+    if (properties.height >= properties.width) {
+      startY = startingPoint;
+    } else {
+      startX = startingPoint;
+    }
+    File croppedFile = await FlutterNativeImage.cropImage(
+        filePath, startX, startY, minDimension, minDimension);
+    croppedFile =
+        await FlutterNativeImage.compressImage(croppedFile.path, quality: 70);
+    return croppedFile;
   }
 
   static dartImage.Image rotate(int timesOfRotation, dartImage.Image image) {

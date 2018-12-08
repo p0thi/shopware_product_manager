@@ -9,7 +9,10 @@ import 'package:diKapo/widgets/components/photoComposer/imageUnit.dart';
 import 'package:diKapo/widgets/components/photoComposer/trashArea.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class PhotoComposer extends StatefulWidget {
   Product _product;
@@ -100,8 +103,7 @@ class _PhotoComposerState extends State<PhotoComposer> {
               ),
             ),
             onTap: () {
-              ImagePicker
-                  .pickImage(
+              ImagePicker.pickImage(
                       source: ImageSource.camera,
                       maxWidth: 2500.0,
                       maxHeight: 2500.0)
@@ -139,12 +141,11 @@ class _PhotoComposerState extends State<PhotoComposer> {
                 ),
               ),
               onTap: () {
-                ImagePicker
-                    .pickImage(
-                        source: ImageSource.gallery,
-                        maxWidth: 2500.0,
-                        maxHeight: 2500.0)
-                    .then((file) {
+                ImagePicker.pickImage(
+                  source: ImageSource.gallery,
+//                        maxWidth: 2000.0,
+//                        maxHeight: 2000.0
+                ).then((file) {
                   setState(() {
                     widget._currentProcessingPicturesCount++;
                     _items = generateItems();
@@ -167,10 +168,11 @@ class _PhotoComposerState extends State<PhotoComposer> {
             max(widget._currentProcessingPicturesCount - 1, 0);
         _items = generateItems();
         widget._inputChanged();
-        Scaffold.of(context).showSnackBar(SnackBar(
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 5),
-            content: Text("Es wurde kein Bild aufgenommen...")));
+        Util.showCustomError("Es wurde kein Bild aufgenommen...");
+//        Scaffold.of(context).showSnackBar(SnackBar(
+//            backgroundColor: Colors.red,
+//            duration: Duration(seconds: 5),
+//            content: Text("Es wurde kein Bild aufgenommen...")));
       });
       return;
     }
@@ -179,20 +181,46 @@ class _PhotoComposerState extends State<PhotoComposer> {
         content: Text("Das Bild wird verarbeitet...")));
 
     try {
-      compute(Util.cropImage, file.path).then((data) {
-        List<int> bytes = base64Decode(data);
+      ImageCropper.cropImage(
+              sourcePath: file.path,
+              ratioX: 1,
+              ratioY: 1,
+              maxWidth: 900,
+              maxHeight: 900,
+              toolbarTitle: "Bild bearbeiten",
+              toolbarColor: Theme.of(context).accentColor)
+          .then((croppedFile) {
+        FlutterNativeImage.getImageProperties(croppedFile.path)
+            .then((properties) {
+          FlutterNativeImage.compressImage(croppedFile.path, quality: 70)
+              .then((lowQualityFile) {
+            setState(() {
+              widget._currentProcessingPicturesCount =
+                  max(widget._currentProcessingPicturesCount - 1, 0);
+              widget._product.imageDatas
+                  .add(new ImageData.withImage(croppedFile));
+              _items = generateItems();
+              widget._inputChanged();
+            });
+          });
+        });
+      }).catchError((error) {
         setState(() {
           widget._currentProcessingPicturesCount =
               max(widget._currentProcessingPicturesCount - 1, 0);
-          widget._product.imageDatas.add(new ImageData.withImage(
-              Image.memory(
-                bytes,
-              ),
-              data));
-          _items = generateItems();
-          widget._inputChanged();
         });
+        Util.showCustomError("Das Bild wurde nicht hinzugefügt!");
       });
+      Util.schowGeneralToast("Hier den Ausschnitt des Bildes festlegen.");
+//      Util.cropImageNative(file.path).then((file) {
+//        setState(() {
+//          widget._currentProcessingPicturesCount =
+//              max(widget._currentProcessingPicturesCount - 1, 0);
+//          widget._product.imageDatas.add(new ImageData.withImage(file));
+//          _items = generateItems();
+//          widget._inputChanged();
+//        });
+//      });
     } catch (e) {}
   }
 
