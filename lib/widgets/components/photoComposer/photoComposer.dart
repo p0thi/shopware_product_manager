@@ -60,10 +60,11 @@ class _PhotoComposerState extends State<PhotoComposer> {
         });
       }));
     }
+    double tileDimension = Util.relWidth(context, 5.4);
     for (var i = 0; i < widget._currentProcessingPicturesCount; i++) {
       result.add(Container(
-        width: 200.0,
-        height: 200.0,
+        width: tileDimension,
+        height: tileDimension,
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(18.0),
@@ -73,10 +74,13 @@ class _PhotoComposerState extends State<PhotoComposer> {
       ));
     }
     double verticalPadding = Util.relHeight(context, .5);
+    verticalPadding = Util.relWidth(context, .5);
     double horizontalPadding = Util.relWidth(context, 6.0);
     Container tmpContainer = Container(
+      width: tileDimension,
+      height: tileDimension,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           GestureDetector(
             child: Container(
