@@ -10,7 +10,7 @@ import 'package:diKapo/widgets/components/photoComposer/trashArea.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+//import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
 
@@ -168,7 +168,7 @@ class _PhotoComposerState extends State<PhotoComposer> {
             max(widget._currentProcessingPicturesCount - 1, 0);
         _items = generateItems();
         widget._inputChanged();
-        Util.showCustomError("Es wurde kein Bild aufgenommen...");
+        Util.showCustomError(context, "Es wurde kein Bild aufgenommen...");
 //        Scaffold.of(context).showSnackBar(SnackBar(
 //            backgroundColor: Colors.red,
 //            duration: Duration(seconds: 5),
@@ -190,14 +190,17 @@ class _PhotoComposerState extends State<PhotoComposer> {
               toolbarTitle: "Bild bearbeiten",
               toolbarColor: Theme.of(context).accentColor)
           .then((croppedFile) {
+//      FlutterNativeImage.getImageProperties(file.path).then((properties) {
         FlutterNativeImage.getImageProperties(croppedFile.path)
             .then((properties) {
+//        FlutterNativeImage.compressImage(file.path, quality: 70)
           FlutterNativeImage.compressImage(croppedFile.path, quality: 70)
               .then((lowQualityFile) {
             setState(() {
               widget._currentProcessingPicturesCount =
                   max(widget._currentProcessingPicturesCount - 1, 0);
               widget._product.imageDatas
+//                  .add(new ImageData.withImage(file));
                   .add(new ImageData.withImage(croppedFile));
               _items = generateItems();
               widget._inputChanged();
@@ -209,9 +212,10 @@ class _PhotoComposerState extends State<PhotoComposer> {
           widget._currentProcessingPicturesCount =
               max(widget._currentProcessingPicturesCount - 1, 0);
         });
-        Util.showCustomError("Das Bild wurde nicht hinzugefügt!");
+        Util.showCustomError(context, "Das Bild wurde nicht hinzugefügt!");
       });
-      Util.schowGeneralToast("Hier den Ausschnitt des Bildes festlegen.");
+      Util.schowGeneralToast(
+          context, "Hier den Ausschnitt des Bildes festlegen.");
 //      Util.cropImageNative(file.path).then((file) {
 //        setState(() {
 //          widget._currentProcessingPicturesCount =

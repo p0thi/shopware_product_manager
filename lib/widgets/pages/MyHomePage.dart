@@ -77,12 +77,12 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               }
             });
           }, onError: (error) {
-            Util.showGeneralError();
+            Util.showGeneralError(context);
           });
         }
       }, onError: (error) {
         print(error);
-        Util.showGeneralError();
+        Util.showGeneralError(context);
       });
     });
   }
@@ -203,8 +203,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                         fetchProducts();
                         break;
                       case 2:
-                        Navigator
-                            .of(context)
+                        Navigator.of(context)
                             .push(MaterialPageRoute(builder: (context) {
                           return CreateProductPage.fromProduct(
                               new Product(), true);

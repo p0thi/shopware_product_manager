@@ -13,7 +13,6 @@ import 'package:diKapo/widgets/components/priceSelector.dart';
 import 'package:diKapo/widgets/components/propertySelector/propertySelector.dart';
 import 'package:diKapo/widgets/components/steps/customStepper.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -121,8 +120,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
                           currentCustomStep: _currentStep,
                           type: CustomStepperType.vertical,
                           onCustomStepContinue: () {
-                            FocusScope
-                                .of(context)
+                            FocusScope.of(context)
                                 .requestFocus(new FocusNode());
                             setState(() {
                               _steps[_currentStep].isActive = false;
@@ -131,16 +129,14 @@ class _CreateProductPageState extends State<CreateProductPage> {
                             });
                           },
                           onCustomStepCancel: () {
-                            FocusScope
-                                .of(context)
+                            FocusScope.of(context)
                                 .requestFocus(new FocusNode());
                             setState(() {
                               _currentStep = max(0, _currentStep - 1);
                             });
                           },
                           onCustomStepTapped: (index) {
-                            FocusScope
-                                .of(context)
+                            FocusScope.of(context)
                                 .requestFocus(new FocusNode());
                             setState(() {
                               _currentStep = index;
@@ -303,9 +299,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
       "changed": DateTime.now().toIso8601String(),
       "mainDetail": {
         "number":
-            "${_product.artNr != null && _product.artNr != "" && !widget._newProduct
-                ? _product.artNr
-                : DateTime.now().hashCode}",
+            "${_product.artNr != null && _product.artNr != "" && !widget._newProduct ? _product.artNr : DateTime.now().hashCode}",
         "inStock": _availabilitySelector.quantity,
         "lastStock": true,
         "stockMin": 1,
@@ -329,28 +323,32 @@ class _CreateProductPageState extends State<CreateProductPage> {
       articleBody["id"] = _product.id;
     }
     _httpFunction(
-        "${Util.baseApiUrl}articles/${widget._newProduct ? "" : _product.id}",
-        headers: Util.httpHeaders(prefs.get("username"), prefs.get("pass")),
-        body: json.encode(articleBody)).then(
+            "${Util.baseApiUrl}articles/${widget._newProduct ? "" : _product.id}",
+            headers: Util.httpHeaders(prefs.get("username"), prefs.get("pass")),
+            body: json.encode(articleBody))
+        .then(
       (http.Response response) {
         setState(() {
           _saving = false;
           saved = true;
         });
         if (response.statusCode >= 200 && response.statusCode < 300) {
-          Fluttertoast.showToast(
-              msg: "Artikel erfolgreich gespeichert...",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIos: 2);
           Navigator.of(context).pop(true);
+//          Util.schowGeneralToast(context, "Artikel erfolgreich gespeichert...");
+//          Fluttertoast.showToast(
+//              msg: "Artikel erfolgreich gespeichert...",
+//              toastLength: Toast.LENGTH_SHORT,
+//              gravity: ToastGravity.CENTER,
+//              timeInSecForIos: 2);
         } else {
-          Fluttertoast.showToast(
-              msg:
-                  "Artikel konnte nicht gespeichert werden! Bitte erneut versuchen.",
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIos: 2);
+          Util.showCustomError(context,
+              "Artikel konnte nicht gespeichert werden! Bitte erneut versuchen.");
+//          Fluttertoast.showToast(
+//              msg:
+//                  "Artikel konnte nicht gespeichert werden! Bitte erneut versuchen.",
+//              toastLength: Toast.LENGTH_LONG,
+//              gravity: ToastGravity.CENTER,
+//              timeInSecForIos: 2);
           print(response.body);
           print(json.encode(articleBody));
           for (int id in newUploadedImages) {

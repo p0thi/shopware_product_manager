@@ -38,7 +38,7 @@ class _PropertySelectorState extends State<PropertySelector>
         setState(() {
           fetched = true;
         });
-      }, onError: (error) => Util.showGeneralError());
+      }, onError: (error) => Util.showGeneralError(context));
     });
 
     if (_getActiveGroup() == null) {

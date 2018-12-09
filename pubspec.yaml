@@ -19,10 +19,10 @@ dependencies:
   shared_preferences: "0.4.1"
  # zoomable_image: "1.2.0"
   crypto: any
-  fluttertoast: ^2.0.3
   flutter_native_image:
     git: https://github.com/btastic/flutter_native_image.git
-  image_cropper: any
+  image_cropper: ^0.0.9
+#  fluttertoast: 2.1.4
 
 dev_dependencies:
   flutter_test:

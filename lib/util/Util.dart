@@ -5,10 +5,10 @@ import 'dart:math';
 
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as dartImage;
 
@@ -30,25 +30,29 @@ class Util {
     return hex.encode(digest.bytes);
   }
 
-  static void showGeneralError() {
-    showCustomError("FEHLER! Eventuell Pascal bescheid sagen... 😌");
+  static void showGeneralError(BuildContext context) {
+    showCustomError(context, "FEHLER! Eventuell Pascal bescheid sagen... 😌");
   }
 
-  static void showCustomError(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 5,
-        textcolor: "#e00000");
+  static void showCustomError(BuildContext context, String msg) {
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text(msg)));
+//    Fluttertoast.showToast(
+//        msg: msg,
+//        toastLength: Toast.LENGTH_LONG,
+//        gravity: ToastGravity.CENTER,
+//        timeInSecForIos: 5,
+////        backgroundColor: Colors.red,
+//        textColor: Colors.red);
   }
 
-  static void schowGeneralToast(String msg) {
-    Fluttertoast.showToast(
-        msg: msg,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIos: 5);
+  static void schowGeneralToast(BuildContext context, String msg) {
+    Scaffold.of(context).showSnackBar(SnackBar(content: Text(msg)));
+//    Fluttertoast.showToast(
+//        msg: msg,
+//        toastLength: Toast.LENGTH_LONG,
+//        gravity: ToastGravity.CENTER,
+////        backgroundColor: Colors.grey,
+//        timeInSecForIos: 5);
   }
 
   static Future<bool> checkCredentials(String username, String pass) async {
@@ -57,7 +61,7 @@ class Util {
     if (res.statusCode == 200) {
       return true;
     }
-    Util.showGeneralError();
+//    Util.showGeneralError();
     return false;
   }
 
