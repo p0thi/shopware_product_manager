@@ -24,6 +24,7 @@ class ProductPreview extends StatefulWidget {
 class _ProductPreviewState extends State<ProductPreview>
     with TickerProviderStateMixin {
   static const Color highlightColor = Color.fromRGBO(0, 47, 124, 1.0);
+
 //  static const Color highlightColor = Colors.blueGrey;
   bool imageAvailable;
   bool isExpanded;
@@ -252,10 +253,7 @@ class _ProductPreviewState extends State<ProductPreview>
                                   Padding(
                                     padding: tableRowPadding,
                                     child: Text(
-                                      "${widget._product.fakePrice != null
-                                            && widget._product.fakePrice != widget._product.price
-                                            ? widget._product.fakePrice
-                                            : "----"} €",
+                                      "${widget._product.fakePrice != null && widget._product.fakePrice != widget._product.price ? widget._product.fakePrice : "----"} €",
                                       style: TextStyle(
                                           color: Colors.red,
                                           decoration:

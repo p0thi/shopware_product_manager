@@ -17,6 +17,7 @@ class _AuthPageState extends State<AuthPage> {
   TextEditingController usernameController =
       new TextEditingController(text: "");
   TextEditingController passController = new TextEditingController(text: "");
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(

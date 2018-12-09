@@ -1,6 +1,7 @@
 class PhotoViewComputedScale {
   final String _value;
   final double multiplier;
+
   const PhotoViewComputedScale._internal(this._value, [this.multiplier = 1.0]);
 
   @override

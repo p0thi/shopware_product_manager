@@ -7,6 +7,7 @@ class ImageViewer extends StatefulWidget {
   ImageData _image;
 
   ImageViewer(this._image);
+
   @override
   _ImageViewerState createState() => _ImageViewerState();
 }

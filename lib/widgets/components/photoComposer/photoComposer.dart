@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -10,9 +9,9 @@ import 'package:diKapo/widgets/components/photoComposer/trashArea.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
-//import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+//import 'package:fluttertoast/fluttertoast.dart';
 
 class PhotoComposer extends StatefulWidget {
   Product _product;

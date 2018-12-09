@@ -132,8 +132,8 @@ class _PriceSelectorState extends State<PriceSelector> {
                                 InputDecoration(labelText: "Fake Preis"),
                             onChanged: (value) {
                               setState(() {
-                                widget._fakePrice = double
-                                        .tryParse(value.replaceAll(",", ".")) ??
+                                widget._fakePrice = double.tryParse(
+                                        value.replaceAll(",", ".")) ??
                                     .0;
                                 widget._inputChanged();
                               });

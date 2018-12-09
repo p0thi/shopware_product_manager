@@ -13,7 +13,11 @@ class ProductCategory {
   int _childrenCount;
   int _articleCount;
 
-  static List<String> acceptableNames = <String>['Mützen', 'Stirnbänder', 'Accessoires'];
+  static List<String> acceptableNames = <String>[
+    'Mützen',
+    'Stirnbänder',
+    'Accessoires'
+  ];
 
   ProductCategory(this._name, this._id, this._active, this._parentId,
       this._childrenCount, this._articleCount);

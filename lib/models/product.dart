@@ -114,9 +114,9 @@ class Product {
         ));
       }
     } catch (e) {}
-    result._releaseDate = DateTime
-        .parse(productMap["data"]["mainDetail"]["releaseDate"])
-        .toLocal();
+    result._releaseDate =
+        DateTime.parse(productMap["data"]["mainDetail"]["releaseDate"])
+            .toLocal();
     return result;
   }
 

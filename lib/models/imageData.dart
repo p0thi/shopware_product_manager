@@ -37,7 +37,7 @@ class ImageData {
     this._thumbnailUrl = url;
   }
 
-  ImageData.withImage(File file/*, Image image, String imageBase64*/) {
+  ImageData.withImage(File file /*, Image image, String imageBase64*/) {
 //    _imageFile = file;
     _imageBase64 = base64Encode(file.readAsBytesSync());
     _image = Image.file(file);

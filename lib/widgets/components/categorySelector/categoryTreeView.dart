@@ -17,6 +17,7 @@ class CategoryTreeView extends StatefulWidget {
 
 class _CategoryTreeViewState extends State<CategoryTreeView> {
   List<ProductCategory> _allCategories;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -76,14 +77,15 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
                 child: _allCategories != null
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: List.of(ProductCategory
-                            .getRealRoots(_allCategories)
+                        children: List.of(ProductCategory.getRealRoots(
+                                _allCategories)
                             .map((category) => CategoryItem(
                                     category,
                                     _allCategories,
                                     widget._activeCategories, (id, isActive) {
-                                  ProductCategory myCategory = ProductCategory
-                                      .getById(id, _allCategories);
+                                  ProductCategory myCategory =
+                                      ProductCategory.getById(
+                                          id, _allCategories);
                                   setState(() {
                                     if (isActive) {
                                       widget._activeCategories.add(myCategory);
@@ -112,7 +114,9 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
     super.initState();
     ProductCategory.getAllCategories().then((list) {
       setState(() {
-        _allCategories = list.where((i) => ProductCategory.acceptableNames.contains(i.name)).toList();
+        _allCategories = list
+            .where((i) => ProductCategory.acceptableNames.contains(i.name))
+            .toList();
       });
     });
   }

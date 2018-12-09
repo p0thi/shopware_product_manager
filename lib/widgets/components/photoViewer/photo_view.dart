@@ -1,7 +1,9 @@
 library photo_view;
 
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import 'photo_view_image_wrapper.dart';
 import 'photo_view_scale_boundaries.dart';
 import 'photo_view_scale_state.dart';
@@ -271,8 +273,8 @@ class PhotoViewInline extends StatefulWidget {
   State<StatefulWidget> createState() => _PhotoViewInlineState();
 }
 
-class _PhotoViewInlineState extends State<PhotoViewInline>
-/*with AfterLayoutMixin<PhotoViewInline>*/ {
+class _PhotoViewInlineState
+    extends State<PhotoViewInline> /*with AfterLayoutMixin<PhotoViewInline>*/ {
   Size _size;
 
   @override

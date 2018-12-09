@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'photo_view_scale_boundaries.dart';
 import 'photo_view_scale_state.dart';
 import 'photo_view_utils.dart';
@@ -284,6 +285,7 @@ class _PhotoViewImageWrapperState extends State<PhotoViewImageWrapper>
 class ImagePositionDelegate extends SingleChildLayoutDelegate {
   final double imageWidth;
   final double imageHeight;
+
   const ImagePositionDelegate(this.imageWidth, this.imageHeight);
 
   @override
