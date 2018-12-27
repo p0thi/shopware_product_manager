@@ -229,6 +229,8 @@ class __DialogContentState extends State<_DialogContent> {
           Container(
             padding: EdgeInsets.all(Util.relWidth(context, 2.0)),
             child: Table(
+//              defaultColumnWidth: IntrinsicColumnWidth(),
+              columnWidths: {1: IntrinsicColumnWidth()},
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: _createValueView(),
             ),
@@ -256,27 +258,32 @@ class __DialogContentState extends State<_DialogContent> {
   List<TableRow> _createValueView() {
     List<TableRow> result = List();
     for (PropertyValue value in widget._values) {
-      Widget colorWidget;
-      if (value is ColorPropertyValue) {
-        colorWidget = Container(
-          child: Center(
-            child: Container(
-              decoration: BoxDecoration(
-                  color: value.color,
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.all(Radius.circular(50.0))),
-              height: Util.relWidth(context, 5.0),
-              width: Util.relWidth(context, 5.0),
-            ),
-          ),
-        );
-      }
+//      Widget secondaryWidget;
+//      if (value is ColorPropertyValue) {
+//        secondaryWidget = Container(
+//          child: Center(
+//            child: Container(
+//              decoration: BoxDecoration(
+//                  color: value.color,
+//                  border: Border.all(color: Colors.grey),
+//                  borderRadius: BorderRadius.all(Radius.circular(50.0))),
+//              height: Util.relWidth(context, 5.0),
+//              width: Util.relWidth(context, 5.0),
+//            ),
+//          ),
+//        );
+//      }
       result.add(TableRow(children: <Widget>[
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(value.value),
         ),
-        colorWidget ?? Container(),
+//        secondaryWidget ?? Container(),
+        Padding(
+          padding:
+              EdgeInsets.symmetric(horizontal: Util.relWidth(context, 5.0)),
+          child: value.getSecondaryWidget(context),
+        ),
         Material(
           borderRadius: BorderRadius.all(Radius.circular(50.0)),
           color: value.active ? Colors.lightGreenAccent : Colors.grey[300],

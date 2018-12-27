@@ -1,3 +1,4 @@
+import 'package:diKapo/util/Util.dart';
 import 'package:flutter/material.dart';
 
 class PropertyValue {
@@ -31,6 +32,12 @@ class PropertyValue {
     }
   }
 
+  Widget getSecondaryWidget(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: Util.relWidth(context, 5.0)),
+    );
+  }
+
   static List<PropertyValue> get values => [
         // Größe
         PropertyValue("Kleiner", "1", false),
@@ -46,7 +53,14 @@ class PropertyValue {
         PropertyValue("Kinder", "4", false),
 
         // Modell
-        PropertyValue("Nordwind", "7", false),
+        TextPropertyValue("Prien", "7", false, 'Biese'),
+        TextPropertyValue("Fraueninsel", "7", false, 'Ringhut'),
+        TextPropertyValue("Breitbrunn", "7", false, 'Aufschlag'),
+        TextPropertyValue("Herrenchiemsee", "7", false, 'Herren'),
+        TextPropertyValue("Seebruck", "7", false, 'Schnittkante'),
+        TextPropertyValue("Rimsting", "7", false, 'Beanie'),
+        TextPropertyValue("Übersee", "7", false, 'Schirmmütze'),
+        TextPropertyValue("Chieming", "7", false, 'Paris Hut'),
 
         // Farbe
         ColorPropertyValue("Rot", "6", false, Colors.red),
@@ -85,5 +99,43 @@ class ColorPropertyValue extends PropertyValue {
   ColorPropertyValue(value, optionId, selected, this._color)
       : super(value, optionId, selected);
 
-  Color get color => _color;
+//  Color get color => _color;
+
+  @override
+  Widget getSecondaryWidget(BuildContext context) {
+    return Center(
+//      child: Padding(
+//        padding: EdgeInsets.symmetric(horizontal: Util.relWidth(context, 8.0)),
+      child: Container(
+        decoration: BoxDecoration(
+            color: _color,
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.all(Radius.circular(50.0))),
+        height: Util.relWidth(context, 5.0),
+        width: Util.relWidth(context, 5.0),
+      ),
+//      ),
+    );
+  }
+}
+
+class TextPropertyValue extends PropertyValue {
+  final String _text;
+
+  TextPropertyValue(value, optionId, selected, this._text)
+      : super(value, optionId, selected);
+
+  @override
+  Widget getSecondaryWidget(BuildContext context) {
+    return Container(
+//      child: Center(
+      child: Text(
+        '(' + _text + ')',
+        style: TextStyle(
+          fontSize: 11.0,
+        ),
+      ),
+//      ),
+    );
+  }
 }

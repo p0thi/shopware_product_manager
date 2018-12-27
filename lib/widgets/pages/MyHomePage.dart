@@ -26,7 +26,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   static const List<IconData> fabIcons = const [
     Icons.sort,
     Icons.refresh,
-    Icons.add,
+//    Icons.add,
   ];
   static const Map<int, String> fabTooltips = const {
     0: "Artikel sortieren",

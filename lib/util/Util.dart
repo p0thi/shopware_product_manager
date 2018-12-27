@@ -33,6 +33,10 @@ class Util {
     showCustomError(context, "FEHLER! Eventuell Pascal bescheid sagen... 😌");
   }
 
+  static String generateProductID() {
+    return DateTime.now().hashCode.toString();
+  }
+
   static void showCustomError(BuildContext context, String msg) {
     Scaffold.of(context).showSnackBar(SnackBar(content: Text(msg)));
 //    Fluttertoast.showToast(

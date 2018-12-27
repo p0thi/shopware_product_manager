@@ -299,7 +299,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
       "changed": DateTime.now().toIso8601String(),
       "mainDetail": {
         "number":
-            "${_product.artNr != null && _product.artNr != "" && !widget._newProduct ? _product.artNr : DateTime.now().hashCode}",
+            "${_product.artNr != null && _product.artNr != "" && !widget._newProduct ? _product.artNr : Util.generateProductID()}",
         "inStock": _availabilitySelector.quantity,
         "lastStock": true,
         "stockMin": 1,
