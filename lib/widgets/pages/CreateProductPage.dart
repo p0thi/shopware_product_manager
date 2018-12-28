@@ -15,6 +15,7 @@ import 'package:diKapo/widgets/components/steps/customStepper.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vibrate/vibrate.dart';
 
 class CreateProductPage extends StatefulWidget {
   final String _id;
@@ -244,7 +245,22 @@ class _CreateProductPageState extends State<CreateProductPage> {
     print(response.body);
   }
 
+  void showToast(String msg,
+      {Color color = const Color(0xFF323232), int dur = 5}) {
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: color,
+      duration: Duration(seconds: dur),
+    ));
+  }
+
   void saveProduct(BuildContext myContext) async {
+//    if (_product.imageDatas.length <= 0) {
+//      showToast("Es muss ein Bild aufgenommen werden!", color: Colors.red);
+//      Vibrate.feedback(FeedbackType.error);
+//      return;
+//    }
+
     setState(() {
       _saving = true;
     });
@@ -281,7 +297,6 @@ class _CreateProductPageState extends State<CreateProductPage> {
         _savingPercent += percentStep;
       });
     }
-
     Map<String, dynamic> articleBody = {
       "name": _titleController.text.replaceAll("\n", " "),
       "taxId": 1,
@@ -299,7 +314,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
       "changed": DateTime.now().toIso8601String(),
       "mainDetail": {
         "number":
-            "${_product.artNr != null && _product.artNr != "" && !widget._newProduct ? _product.artNr : Util.generateProductID()}",
+            "${_product.artNr != null && _product.artNr != "" && !widget._newProduct ? _product.artNr : await Util.generateProductID()}",
         "inStock": _availabilitySelector.quantity,
         "lastStock": true,
         "stockMin": 1,
@@ -341,8 +356,16 @@ class _CreateProductPageState extends State<CreateProductPage> {
 //              gravity: ToastGravity.CENTER,
 //              timeInSecForIos: 2);
         } else {
-          Util.showCustomError(context,
-              "Artikel konnte nicht gespeichert werden! Bitte erneut versuchen.");
+          for (int id in newUploadedImages) {
+            deleteMedia(id, prefs);
+          }
+          Vibrate.feedback(FeedbackType.error);
+          _scaffoldKey.currentState.showSnackBar(SnackBar(
+            content: Text(
+                "Artikel konnte nicht gespeichert werden! Bitte erneut versuchen."),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 10),
+          ));
 //          Fluttertoast.showToast(
 //              msg:
 //                  "Artikel konnte nicht gespeichert werden! Bitte erneut versuchen.",
@@ -351,9 +374,6 @@ class _CreateProductPageState extends State<CreateProductPage> {
 //              timeInSecForIos: 2);
           print(response.body);
           print(json.encode(articleBody));
-          for (int id in newUploadedImages) {
-            deleteMedia(id, prefs);
-          }
         }
         changed = false;
       },

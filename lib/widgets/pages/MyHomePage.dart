@@ -64,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         setState(() {
           _productCount = parsedRequest["data"].length;
         });
+        prefs.setInt('artNr', 0);
         for (var i = 0; i < parsedRequest["data"].length; i++) {
           Product.fromId(parsedRequest["data"][i]["id"].toString()).then(
               (product) {

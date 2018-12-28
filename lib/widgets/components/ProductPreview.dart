@@ -26,7 +26,7 @@ class _ProductPreviewState extends State<ProductPreview>
   static const Color highlightColor = Color.fromRGBO(0, 47, 124, 1.0);
 
 //  static const Color highlightColor = Colors.blueGrey;
-  bool imageAvailable;
+//  bool imageAvailable;
   bool isExpanded;
   TextStyle expandedTextStyle;
   EdgeInsetsGeometry tableRowPadding;
@@ -34,17 +34,21 @@ class _ProductPreviewState extends State<ProductPreview>
   @override
   void initState() {
     super.initState();
-    imageAvailable = widget._product.imageDatas.length != 0;
+//    imageAvailable = widget._product.imageDatas.isNotEmpty;
+//    print(
+//        'Is images of ${widget._product.name} empty: ${widget._product.imageDatas.length}');
     isExpanded = false;
     expandedTextStyle = TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold);
     tableRowPadding = EdgeInsets.only(
         top: Util.relHeight(context, 1.0),
         bottom: Util.relHeight(context, 1.0));
-    fetchImage();
+//    fetchImage();
   }
 
   Image fetchImage() {
-    if (!imageAvailable) return Image.asset("assets/1x1.png");
+    if (widget._product.imageDatas.isEmpty) {
+      return Image.asset("assets/1x1.png");
+    }
 //    ImageData image = widget._product.imageDatas[0];
     return widget._product.imageDatas[0].thumbnail;
   }
@@ -272,7 +276,7 @@ class _ProductPreviewState extends State<ProductPreview>
                                   Padding(
                                     padding: tableRowPadding,
                                     child: Text(
-                                        "${widget._product.imageDatas.length}"),
+                                        "${widget._product.imageDatas.isEmpty ? 0 : widget._product.imageDatas.length}"),
                                   ),
                                   Padding(
                                     padding: tableRowPadding,

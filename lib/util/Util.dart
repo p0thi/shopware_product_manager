@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as dartImage;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Util {
   static Map<String, String> httpHeaders(String username, String pass) {
@@ -33,8 +34,12 @@ class Util {
     showCustomError(context, "FEHLER! Eventuell Pascal bescheid sagen... 😌");
   }
 
-  static String generateProductID() {
-    return DateTime.now().hashCode.toString();
+  static Future<String> generateProductID() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    int artNr = prefs.getInt("artNr");
+    prefs.setInt("artNr", artNr + 1);
+    return "AP" + (artNr + 1).toString().padLeft(4, '0');
+//    return DateTime.now().hashCode.toString();
   }
 
   static void showCustomError(BuildContext context, String msg) {

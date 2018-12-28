@@ -23,6 +23,7 @@ dependencies:
     git: https://github.com/btastic/flutter_native_image.git
   image_cropper: ^0.0.9
 #  fluttertoast: 2.1.4
+  vibrate: ^0.0.4
 
 dev_dependencies:
   flutter_test:

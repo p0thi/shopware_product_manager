@@ -18,7 +18,7 @@ class Product {
   DateTime _releaseDate = DateTime.now();
   DateTime _changedDate = DateTime.now();
   String _tax = "";
-  List<ImageData> _imageDatas = List();
+  List<ImageData> _imageDatas = new List();
   int _quantity = 0;
   List<ProductCategory> _categories = List();
   double _price = .0;
@@ -46,6 +46,22 @@ class Product {
         .replaceAll("<\/p>", "");
     result._quantity = productMap["data"]["mainDetail"]["inStock"];
     result._artNr = productMap["data"]["mainDetail"]["number"];
+
+    SharedPreferences.getInstance().then((prefs) async {
+      if (!result.artNr.startsWith("AP")) {
+        return;
+      }
+      print('Numer von ${result._name}:');
+      String numbers = result._artNr.substring(2);
+      print(numbers);
+      int number = int.parse(numbers);
+      int prefNumber = prefs.getInt('artNr');
+      if ((prefNumber == null || prefNumber < number) && number < 10000) {
+        print('Setting number to $number');
+        prefs.setInt('artNr', number);
+      }
+      print('New prefs: ${prefs.getInt("artNr").toString()}');
+    });
     result._changedDate =
         DateTime.parse(productMap["data"]["changed"]).toLocal();
     result._tax = productMap["data"]["tax"]["name"];
