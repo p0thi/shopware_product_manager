@@ -142,11 +142,13 @@ class _PhotoViewState extends State<PhotoView> {
   PhotoViewScaleState _scaleState;
   ImageInfo _imageInfo;
 
+  ImageStreamListener listener() {}
+
   Future<ImageInfo> _getImage() {
     final Completer completer = Completer<ImageInfo>();
     final ImageStream stream =
         widget.imageProvider.resolve(const ImageConfiguration());
-    final listener = (ImageInfo info, bool synchronousCall) {
+    final ImageListener listener = (ImageInfo info, bool synchronousCall) {
       if (!completer.isCompleted) {
         completer.complete(info);
         setState(() {
@@ -154,9 +156,10 @@ class _PhotoViewState extends State<PhotoView> {
         });
       }
     };
-    stream.addListener(listener);
+    final ImageStreamListener streamListener = ImageStreamListener(listener);
+    stream.addListener(streamListener);
     completer.future.then((_) {
-      stream.removeListener(listener);
+      stream.removeListener(streamListener);
     });
     return completer.future;
   }

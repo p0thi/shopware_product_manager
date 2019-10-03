@@ -45,7 +45,19 @@ class _MyAppState extends State<MyApp> {
         // "hot reload" (press "r" in the console where you ran "flutter run",
         // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
         // counter didn't reset back to zero; the application is not restarted.
-        primarySwatch: Colors.green,
+        primarySwatch: MaterialColor(0xff954747, {
+          50: Color(0xfff17373),
+          100: Color(0xffe76e6e),
+          200: Color(0xffdc6969),
+          300: Color(0xffd26464),
+          400: Color(0xffc85f5f),
+          500: Color(0xffbe5a5a),
+          600: Color(0xffb45656),
+          700: Color(0xffa95151),
+          800: Color(0xff9f4c4c),
+          900: Color(0xff954747),
+        }),
+//        primarySwatch: Colors.green,
       ),
       home: _screen == null
           ? new Container(

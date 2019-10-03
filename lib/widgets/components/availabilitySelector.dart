@@ -37,7 +37,7 @@ class _AvailabilitySelectorState extends State<AvailabilitySelector> {
             width: Util.relWidth(context, 100.0),
             child: Column(
               children: <Widget>[
-                Text("Artikel im Shop anzeigen?"),
+                Text("Artikel im Shop für Kunden anzeigen?"),
                 Switch(
                     value: widget._isAvailable,
                     onChanged: (value) {

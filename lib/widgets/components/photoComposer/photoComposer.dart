@@ -185,31 +185,35 @@ class _PhotoComposerState extends State<PhotoComposer> {
 
     try {
       ImageCropper.cropImage(
-              sourcePath: file.path,
-              ratioX: 1,
-              ratioY: 1,
-              maxWidth: 900,
-              maxHeight: 900,
-              toolbarTitle: "Bild bearbeiten",
-              toolbarColor: Theme.of(context).accentColor)
-          .then((croppedFile) {
-//      FlutterNativeImage.getImageProperties(file.path).then((properties) {
-        FlutterNativeImage.getImageProperties(croppedFile.path)
-            .then((properties) {
-//        FlutterNativeImage.compressImage(file.path, quality: 70)
-          FlutterNativeImage.compressImage(croppedFile.path, quality: 70)
-              .then((lowQualityFile) {
-            setState(() {
-              widget._currentProcessingPicturesCount =
-                  max(widget._currentProcessingPicturesCount - 1, 0);
-              widget._product.imageDatas
+        sourcePath: file.path,
+        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+        maxWidth: 900,
+        maxHeight: 900,
+        compressQuality: 70,
+        androidUiSettings: AndroidUiSettings(
+          toolbarTitle: "Bild bearbeiten",
+          toolbarColor: Theme.of(context).accentColor,
+          toolbarWidgetColor: Theme.of(context).cardColor,
+        ),
+      ).then((croppedFile) {
+        setState(() {
+          widget._currentProcessingPicturesCount =
+              max(widget._currentProcessingPicturesCount - 1, 0);
+          widget._product.imageDatas
 //                  .add(new ImageData.withImage(file));
-                  .add(new ImageData.withImage(croppedFile));
-              _items = generateItems();
-              widget._inputChanged();
-            });
-          });
+              .add(new ImageData.withImage(croppedFile));
+          _items = generateItems();
+          widget._inputChanged();
         });
+//      FlutterNativeImage.getImageProperties(file.path).then((properties) {
+//        FlutterNativeImage.getImageProperties(croppedFile.path)
+//            .then((properties) {
+////        FlutterNativeImage.compressImage(file.path, quality: 70)
+//          FlutterNativeImage.compressImage(croppedFile.path, quality: 70)
+//              .then((lowQualityFile) {
+//
+//          });
+//        });
       }).catchError((error) {
         setState(() {
           widget._currentProcessingPicturesCount =

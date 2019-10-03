@@ -3,21 +3,25 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT" />
+        </compositeConfiguration>
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="/opt/flutter/.pub-cache/git/flutter_native_image-20947f12e6ecf58236f4b0ccaf9965f527ced46d/android" />
-            <option value="/opt/flutter/.pub-cache/hosted/pub.dartlang.org/connectivity-0.3.2/android" />
-            <option value="/opt/flutter/.pub-cache/hosted/pub.dartlang.org/fluttertoast-2.1.4/android" />
+            <option value="/opt/flutter/.pub-cache/git/flutter_native_image-426996b810c8ff3899a6109b65bdab143652e875/android" />
+            <option value="/opt/flutter/.pub-cache/hosted/pub.dartlang.org/connectivity-0.4.4/android" />
             <option value="/opt/flutter/.pub-cache/hosted/pub.dartlang.org/image_cropper-0.0.9/android" />
-            <option value="/opt/flutter/.pub-cache/hosted/pub.dartlang.org/image_picker-0.4.10/android" />
+            <option value="/opt/flutter/.pub-cache/hosted/pub.dartlang.org/image_picker-0.6.1+4/android" />
             <option value="/opt/flutter/.pub-cache/hosted/pub.dartlang.org/shared_preferences-0.4.1/android" />
+            <option value="/opt/flutter/.pub-cache/hosted/pub.dartlang.org/vibrate-0.0.4/android" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
+        <option name="testRunner" value="PLATFORM" />
       </GradleProjectSettings>
     </option>
   </component>

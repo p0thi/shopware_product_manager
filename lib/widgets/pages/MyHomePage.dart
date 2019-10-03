@@ -101,6 +101,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         return b.changedDate.compareTo(a.changedDate);
       case SortingMethod.price:
         return b.price.compareTo(a.price);
+      case SortingMethod.item_number:
+        return b.artNr.compareTo(a.artNr);
     }
     return 0;
   }
@@ -154,18 +156,20 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
               top: .0,
               left: .0,
               right: .0,
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-                child: Container(
-                  color: Colors.grey.shade300.withOpacity(.5),
-                  child: GestureDetector(
-                    onTap: () => showSortDialog(),
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(Util.relHeight(context, 1.5)),
-                        child: Text(
-                          "Sortiert nach ${sortingMethod.description}:",
-                          style: TextStyle(fontSize: 16.0),
+              child: ClipRect(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                  child: Container(
+                    color: Colors.grey.shade300.withOpacity(.5),
+                    child: GestureDetector(
+                      onTap: () => showSortDialog(),
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(Util.relHeight(context, 1.5)),
+                          child: Text(
+                            "Sortiert nach ${sortingMethod.description}:",
+                            style: TextStyle(fontSize: 16.0),
+                          ),
                         ),
                       ),
                     ),
@@ -292,8 +296,10 @@ class SortingMethod {
   static const name = const SortingMethod._("Name");
   static const availability = const SortingMethod._("Verfügbarkeit");
   static const price = const SortingMethod._("Preis");
+  static const item_number = const SortingMethod._("Artikelnummer");
 
-  static get values => [release_date, change_date, name, availability, price];
+  static get values =>
+      [release_date, change_date, name, availability, price, item_number];
 
   String get description => _description;
   final String _description;

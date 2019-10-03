@@ -325,18 +325,29 @@ class _CreateProductPageState extends State<CreateProductPage> {
           {
             "customerGroupKey": "EK",
             "price": _priceSelector.price,
-            "pseudoPrice": _priceSelector.hasFake
+//          ...(_priceSelector.hasFake &&
+//                  _priceSelector.fakePrice < _priceSelector.price
+//              ? {"pseudoPrice": _priceSelector.fakePrice}
+//              : {})
+            "pseudoPrice": _priceSelector.hasFake &&
+                    _priceSelector.fakePrice > _priceSelector.price
                 ? _priceSelector.fakePrice
-                : _priceSelector.price,
+                : null,
           }
         ]
       },
       "supplierId": 4
     };
 
+    print(articleBody["prices"]);
+    print("Fake price");
+    print(_priceSelector.hasFake);
+    print(_priceSelector.fakePrice);
+
     if (!widget._newProduct) {
       articleBody["id"] = _product.id;
     }
+
     _httpFunction(
             "${Util.baseApiUrl}articles/${widget._newProduct ? "" : _product.id}",
             headers: Util.httpHeaders(prefs.get("username"), prefs.get("pass")),
@@ -401,8 +412,11 @@ class _CreateProductPageState extends State<CreateProductPage> {
       _categoryTreeView = CategoryTreeView(_product.categories, inputsChanged);
       _titleController.text = _product.name;
       _descriptionController.text = _product.description;
-      _priceSelector = new PriceSelector(_product.price, _product.fakePrice,
-          _product.price != _product.fakePrice, inputsChanged);
+      _priceSelector = new PriceSelector(
+          _product.price,
+          _product.fakePrice > 0 ? _product.fakePrice : _product.price * 1.1,
+          _product.fakePrice > 0 && _product.price < _product.fakePrice,
+          inputsChanged);
       _dateSelector = DateSelector(
         inputsChanged,
         initDate: widget._newProduct ? null : _product.releaseDate,

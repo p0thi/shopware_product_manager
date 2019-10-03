@@ -28,9 +28,9 @@ class _PriceSelectorState extends State<PriceSelector> {
   void initState() {
     super.initState();
     _priceController = TextEditingController(
-        text: widget._price.toString().replaceAll(".", ","));
+        text: widget._price.toStringAsFixed(2).replaceAll(".", ","));
     _fakePriceController = TextEditingController(
-        text: widget._fakePrice.toString().replaceAll(".", ","));
+        text: widget._fakePrice.toStringAsFixed(2).replaceAll(".", ","));
   }
 
   @override

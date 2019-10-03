@@ -4,6 +4,7 @@ import 'package:diKapo/util/Util.dart';
 import 'package:diKapo/widgets/pages/CreateProductPage.dart';
 import 'package:diKapo/widgets/pages/MyHomePage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -73,9 +74,9 @@ class _ProductPreviewState extends State<ProductPreview>
             },
             child: ListTile(
               title: Center(
-                child: new Text(
+                child: Text(
                   widget._product.name,
-                  style: new TextStyle(
+                  style: TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
                       color: widget._sortingMethod == SortingMethod.name
@@ -87,9 +88,9 @@ class _ProductPreviewState extends State<ProductPreview>
                 children: <Widget>[
                   new Text(
                     "Veröffentlicht am "
-                        "${widget._product.releaseDate.day}."
-                        "${widget._product.releaseDate.month}."
-                        "${widget._product.releaseDate.year}",
+                    "${widget._product.releaseDate.day}."
+                    "${widget._product.releaseDate.month}."
+                    "${widget._product.releaseDate.year}",
                     style: TextStyle(
                         color:
                             widget._sortingMethod == SortingMethod.release_date
@@ -111,9 +112,9 @@ class _ProductPreviewState extends State<ProductPreview>
                   widget._sortingMethod == SortingMethod.change_date
                       ? Text(
                           "Geändert am "
-                              "${widget._product.changedDate.day}."
-                              "${widget._product.changedDate.month}."
-                              "${widget._product.changedDate.year}",
+                          "${widget._product.changedDate.day}."
+                          "${widget._product.changedDate.month}."
+                          "${widget._product.changedDate.year}",
                           style: TextStyle(color: highlightColor),
                         )
                       : Container(),
@@ -123,35 +124,39 @@ class _ProductPreviewState extends State<ProductPreview>
                           style: TextStyle(color: highlightColor),
                         )
                       : Container(),
+                  widget._sortingMethod == SortingMethod.item_number
+                      ? Text(
+                          "ArtNr: ${widget._product.artNr}",
+                          style: TextStyle(color: highlightColor),
+                        )
+                      : Container(),
                 ],
               ),
-              leading:
-//          CircleAvatar(radius: 40.0, backgroundImage: NetworkImage(_imageUrl)),
-                  Stack(
+              leading: Stack(
                 children: <Widget>[
-                  Container(
-                    width: 80.0,
-                    height: 80.0,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: fetchImage().image, fit: BoxFit.cover),
-                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
-//                  border: Border.all(
-//                      width: Util.relWidth(context, 1.0),
-//                      color: widget._product.quantity < 1
-//                          ? Colors.red
-//                          : !widget._product.isActive
-//                              ? Colors.orange
-//                              : Colors.green)
-                    ),
+//                  Container(
+////                    width: 80.0,
+////                    height: 80.0,
+//                    constraints: BoxConstraints.tight(Size.square(80.0)),
+//                    decoration: BoxDecoration(
+//                      image: DecorationImage(
+//                          image: fetchImage().image, fit: BoxFit.cover),
+//                      borderRadius: BorderRadius.circular(30.0),
+//                    ),
+//                  ),
+                  CircleAvatar(
+                    backgroundImage: fetchImage().image,
+//                    minRadius: 40.0,
+//                    maxRadius: 40.0,
+                    radius: Util.relHeight(context, 4),
                   ),
                   Positioned(
                     right: .0,
                     child: Material(
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                        borderRadius: BorderRadius.circular(50.0),
                         child: Container(
-                          height: Util.relWidth(context, 5.5),
-                          width: Util.relWidth(context, 5.5),
+                          height: Util.relWidth(context, 4.5),
+                          width: Util.relWidth(context, 4.5),
                         ),
                         color: widget._product.quantity < 1
                             ? Colors.red

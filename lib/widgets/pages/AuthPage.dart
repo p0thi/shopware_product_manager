@@ -44,6 +44,7 @@ class _AuthPageState extends State<AuthPage> {
                 child: new TextField(
                   controller: passController,
                   obscureText: true,
+                  enableInteractiveSelection: true,
                   decoration: new InputDecoration(hintText: "API Schlüssel"),
                 ),
               ),
