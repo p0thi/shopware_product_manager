@@ -22,7 +22,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
-  SortingMethod sortingMethod = SortingMethod.release_date;
+  SortingMethod sortingMethod = SortingMethod.item_number;
   static const List<IconData> fabIcons = const [
     Icons.sort,
     Icons.refresh,

@@ -7,10 +7,11 @@ import 'package:diKapo/models/properties/propertyGroup.dart';
 import 'package:diKapo/models/properties/propertyOption.dart';
 import 'package:diKapo/models/properties/propertyValue.dart';
 import 'package:diKapo/util/Util.dart';
+import 'package:diKapo/util/observer.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Product {
+class Product extends Observable {
   String _id = "";
   String _artNr = "";
   String _name = "";
@@ -173,12 +174,32 @@ class Product {
   }
 
   PropertyGroup get activeGroup {
-    for (PropertyGroup group in propertyGroups) {
+    List<PropertyGroup> possibleGroups = getPossiblePropertyGroups();
+    for (PropertyGroup group in possibleGroups) {
       if (group.active) {
         return group;
       }
     }
-    return null;
+    for (PropertyGroup group in propertyGroups) {
+      group.active = false;
+    }
+    if (possibleGroups.length > 0) {
+      possibleGroups[0].active = true;
+      return possibleGroups[0];
+    } else {
+      return null;
+    }
+  }
+
+  List<PropertyGroup> getPossiblePropertyGroups() {
+    return propertyGroups.where((i) {
+      for (ProductCategory category in categories) {
+        if (category.name.toLowerCase().trim() == i.name.toLowerCase().trim()) {
+          return true;
+        }
+      }
+      return false;
+    }).toList();
   }
 
   int get quantity => _quantity;
@@ -207,6 +228,15 @@ class Product {
 
   set id(String value) {
     _id = value;
+  }
+
+  set isActive(bool value) {
+    _isActive = value;
+  }
+
+  set categories(List<ProductCategory> categories) {
+    _categories = categories;
+    notify();
   }
 
   String get artNr => _artNr;

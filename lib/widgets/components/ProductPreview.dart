@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:diKapo/models/imageData.dart';
 import 'package:diKapo/models/product.dart';
 import 'package:diKapo/util/Util.dart';
@@ -87,6 +89,14 @@ class _ProductPreviewState extends State<ProductPreview>
               subtitle: Column(
                 children: <Widget>[
                   new Text(
+                    "ArtNr: ${widget._product.artNr}",
+                    style: TextStyle(
+                        color:
+                            widget._sortingMethod == SortingMethod.item_number
+                                ? highlightColor
+                                : null),
+                  ),
+                  Text(
                     "Veröffentlicht am "
                     "${widget._product.releaseDate.day}."
                     "${widget._product.releaseDate.month}."
@@ -97,12 +107,15 @@ class _ProductPreviewState extends State<ProductPreview>
                                 ? highlightColor
                                 : null),
                   ),
-                  new Text(
-                    "Noch ${widget._product.quantity} verfügbar",
-                    style: TextStyle(
-                        color:
-                            widget._product.quantity <= 0 ? Colors.red : null),
-                  ),
+                  widget._sortingMethod == SortingMethod.availability
+                      ? Text(
+                          "Noch ${widget._product.quantity} verfügbar",
+                          style: TextStyle(
+                              color: widget._product.quantity <= 0
+                                  ? Colors.red
+                                  : null),
+                        )
+                      : Container(),
                   widget._sortingMethod == SortingMethod.price
                       ? Text(
                           "Preis: ${widget._product.price}€",
@@ -124,26 +137,10 @@ class _ProductPreviewState extends State<ProductPreview>
                           style: TextStyle(color: highlightColor),
                         )
                       : Container(),
-                  widget._sortingMethod == SortingMethod.item_number
-                      ? Text(
-                          "ArtNr: ${widget._product.artNr}",
-                          style: TextStyle(color: highlightColor),
-                        )
-                      : Container(),
                 ],
               ),
               leading: Stack(
                 children: <Widget>[
-//                  Container(
-////                    width: 80.0,
-////                    height: 80.0,
-//                    constraints: BoxConstraints.tight(Size.square(80.0)),
-//                    decoration: BoxDecoration(
-//                      image: DecorationImage(
-//                          image: fetchImage().image, fit: BoxFit.cover),
-//                      borderRadius: BorderRadius.circular(30.0),
-//                    ),
-//                  ),
                   CircleAvatar(
                     backgroundImage: fetchImage().image,
 //                    minRadius: 40.0,
@@ -166,24 +163,26 @@ class _ProductPreviewState extends State<ProductPreview>
                   ),
                 ],
               ),
+              trailing:
+                  Icon(isExpanded ? Icons.expand_less : Icons.expand_more),
               contentPadding: new EdgeInsets.only(
                   top: Util.relWidth(context, 3.3),
                   right: Util.relWidth(context, 1.3),
                   bottom: Util.relWidth(context, 3.3),
                   left: Util.relWidth(context, 1.7)),
-              trailing: PopupMenuButton<_Choice>(
-                onSelected: (choice) {
-                  _select(context, choice);
-                },
-                itemBuilder: (context) {
-                  return _Choice.choices.map((choice) {
-                    return PopupMenuItem<_Choice>(
-                      value: choice,
-                      child: Text(choice.name),
-                    );
-                  }).toList();
-                },
-              ),
+//              trailing: PopupMenuButton<_Choice>(
+//                onSelected: (choice) {
+//                  _select(context, choice);
+//                },
+//                itemBuilder: (context) {
+//                  return _Choice.choices.map((choice) {
+//                    return PopupMenuItem<_Choice>(
+//                      value: choice,
+//                      child: Text(choice.name),
+//                    );
+//                  }).toList();
+//                },
+//              ),
             ),
           ),
           Container(
@@ -201,27 +200,55 @@ class _ProductPreviewState extends State<ProductPreview>
                       children: <Widget>[
                         Padding(
                           padding: EdgeInsets.all(Util.relWidth(context, 1.0)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          child: Column(
                             children: <Widget>[
-                              FlatButton(
-                                  child: Text("Bearbeiten"),
-                                  color: Colors.grey[200],
-                                  onPressed: () {
-                                    _select(context, _Choice.choices[0]);
-                                  }),
-                              FlatButton(
-                                  child: Text("Duplizieren"),
-                                  color: Colors.grey[200],
-                                  onPressed: () {
-                                    _select(context, _Choice.choices[1]);
-                                  }),
-                              FlatButton(
-                                  child: Text("Löschen"),
-                                  color: Colors.grey[200],
-                                  onPressed: () {
-                                    _select(context, _Choice.choices[2]);
-                                  }),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  FlatButton(
+                                      child: Text("Bearbeiten"),
+                                      color: Colors.grey[300],
+                                      onPressed: () {
+                                        _select(context, _Choice.choices[0]);
+                                      }),
+                                  FlatButton(
+                                      child: Text("Duplizieren"),
+                                      color: Colors.blue[100],
+                                      onPressed: () {
+                                        _select(context, _Choice.choices[1]);
+                                      }),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: <Widget>[
+                                  FlatButton(
+                                      child: Text(
+                                        "Löschen",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                      color: Colors.red[300],
+                                      onPressed: () {
+                                        _select(context, _Choice.choices[2]);
+                                      }),
+                                  FlatButton(
+                                      child: Text(
+                                          widget._product.isActive
+                                              ? "Deaktivieren"
+                                              : "Aktivieren",
+                                          style: !widget._product.isActive
+                                              ? TextStyle(color: Colors.white)
+                                              : null),
+                                      color: widget._product.isActive
+                                          ? Colors.orange[300]
+                                          : Colors.green[300],
+                                      onPressed: () {
+                                        _toggleActiveStatus(context);
+                                      }),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -347,6 +374,57 @@ class _ProductPreviewState extends State<ProductPreview>
         ],
       ),
     );
+  }
+
+  void _toggleActiveStatus(BuildContext context) {
+    SharedPreferences.getInstance().then((prefs) {
+      showDialog(
+          context: context,
+//              barrierDismissible: false,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(
+                  "Willst du den Artikel wirklich  ${widget._product.isActive ? "de" : ""}aktivieren?"),
+              content: SingleChildScrollView(
+                child: ListBody(
+                  children: <Widget>[
+                    Text(
+                        "Er ist danach für Kunden im Shop ${widget._product.isActive ? "nicht mehr " : ""}sichtbar")
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("Ja"),
+                  onPressed: () async {
+                    Product myProduct =
+                        await Product.fromId(widget._product.id);
+                    Map<String, dynamic> articleBody = {
+                      "mainDetail": {
+                        "active": !widget._product.isActive,
+                      }
+                    };
+                    http
+                        .put("${Util.baseApiUrl}articles/${widget._product.id}",
+                            headers: Util.httpHeaders(
+                                prefs.get("username"), prefs.get("pass")),
+                            body: json.encode(articleBody))
+                        .then((response) {
+                      widget._onProductsChanged();
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+                FlatButton(
+                  child: Text("Nein"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    });
   }
 
   void _select(BuildContext context, _Choice choice) {

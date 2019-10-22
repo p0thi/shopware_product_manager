@@ -212,7 +212,28 @@ class _CreateProductPageState extends State<CreateProductPage> {
               });
               return;
             }
-            saveProduct(context);
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text("Artikel speichern?   💾"),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          saveProduct(context);
+                        },
+                        child: Text("Ja, speichern!"),
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Nein"),
+                      )
+                    ],
+                  );
+                });
           },
           tooltip: 'Speichern',
           child: new Icon(Icons.save),
@@ -304,7 +325,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
 //      "active": _availabilitySelector.isAvailable,
       "__options_images": {"replace": true},
       "images": shopwareImages,
-      "categories": List.of(_categoryTreeView.activeCategories.map((category) {
+      "categories": List.of(_product.categories.map((category) {
         return {"id": category.id};
       })),
       "descriptionLong": _descriptionController.text.replaceAll("\n", "<br>"),
@@ -409,7 +430,7 @@ class _CreateProductPageState extends State<CreateProductPage> {
     }
     setState(() {
       _product = product;
-      _categoryTreeView = CategoryTreeView(_product.categories, inputsChanged);
+      _categoryTreeView = CategoryTreeView(_product, inputsChanged);
       _titleController.text = _product.name;
       _descriptionController.text = _product.description;
       _priceSelector = new PriceSelector(

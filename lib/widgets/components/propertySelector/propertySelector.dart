@@ -5,6 +5,7 @@ import 'package:diKapo/models/properties/propertyGroup.dart';
 import 'package:diKapo/models/properties/propertyOption.dart';
 import 'package:diKapo/models/properties/propertyValue.dart';
 import 'package:diKapo/util/Util.dart';
+import 'package:diKapo/util/observer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +21,8 @@ class PropertySelector extends StatefulWidget {
 }
 
 class _PropertySelectorState extends State<PropertySelector>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin
+    implements Observer {
   bool fetched = false;
   Map<String, dynamic> fetchedResponse;
 
@@ -44,6 +46,8 @@ class _PropertySelectorState extends State<PropertySelector>
     if (_getActiveGroup() == null) {
       widget._product.propertyGroups[0].active = true;
     }
+
+    widget._product.addObserver(this);
   }
 
   void _setGroupActive(int index) {
@@ -90,123 +94,156 @@ class _PropertySelectorState extends State<PropertySelector>
   Widget build(BuildContext context) {
     return !fetched
         ? CircularProgressIndicator()
-        : Container(
-            width: 999.0,
-            child: Card(
-              child: Column(
-                children: <Widget>[
-                  Table(
-                    columnWidths: {
-                      0: FractionColumnWidth(.23),
-                      2: FractionColumnWidth(.23),
-                    },
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    children: <TableRow>[
-                      TableRow(children: <Widget>[
-                        Container(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(
-                              widget._product.propertyGroups.length, (index) {
-                            return Container(
-                              margin:
-                                  EdgeInsets.all(Util.relWidth(context, 1.0)),
-                              decoration: BoxDecoration(
-                                  color: widget
-                                          ._product.propertyGroups[index].active
-                                      ? Colors.grey
-                                      : Colors.grey[300],
+        : widget._product.activeGroup == null
+            ? Center(
+                child: Text(
+                  "Im vorherigen Schritt muss mindestens eine Kategorie ausgewählt sein 🙊🙈",
+                  style: TextStyle(color: Colors.red, fontSize: 24.0),
+                ),
+              )
+            : Container(
+                width: 999.0,
+                child: Card(
+                  child: Column(
+                    children: <Widget>[
+                      Table(
+                        columnWidths: {
+                          0: FractionColumnWidth(.23),
+                          2: FractionColumnWidth(.23),
+                        },
+                        defaultVerticalAlignment:
+                            TableCellVerticalAlignment.middle,
+                        children: <TableRow>[
+                          TableRow(children: <Widget>[
+                            Container(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: widget._product
+                                          .getPossiblePropertyGroups()
+                                          .length >
+                                      1
+                                  ? List.generate(
+                                      widget._product
+                                          .getPossiblePropertyGroups()
+                                          .length, (index) {
+                                      return Container(
+                                        margin: EdgeInsets.all(
+                                            Util.relWidth(context, 1.0)),
+                                        decoration: BoxDecoration(
+                                            color: widget._product
+                                                    .getPossiblePropertyGroups()[
+                                                        index]
+                                                    .active
+                                                ? Colors.grey
+                                                : Colors.grey[300],
 //                                  border: Border.all(color: Colors.grey),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(50.0))),
-                              height: Util.relWidth(context, 3.0),
-                              width: Util.relWidth(context, 3.0),
-                            );
-                          }),
-                        ),
-                        Container(),
-                      ]),
-                      TableRow(children: <Widget>[
-                        widget._product.propertyGroups
-                                    .indexOf(_getActiveGroup()) >
-                                0
-                            ? GestureDetector(
-                                onTap: () {
-                                  int currentIndex = widget
-                                      ._product.propertyGroups
-                                      .indexOf(_getActiveGroup());
-                                  setState(() {
-                                    _setGroupActive(currentIndex - 1);
-                                  });
-                                  widget._changed();
-                                },
-                                child: Icon(Icons.arrow_back))
-                            : Container(),
-                        Container(
-                          padding: EdgeInsets.all(Util.relWidth(context, 2.0)),
-                          child: Center(
-                            child: Text(
-                              _getActiveGroup().name,
-                              style: TextStyle(fontSize: 18.0),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50.0))),
+                                        height: Util.relWidth(context, 3.0),
+                                        width: Util.relWidth(context, 3.0),
+                                      );
+                                    })
+                                  : <Widget>[],
                             ),
-                          ),
+                            Container(),
+                          ]),
+                          TableRow(children: <Widget>[
+                            widget._product.propertyGroups
+                                            .indexOf(_getActiveGroup()) >
+                                        0 &&
+                                    widget._product
+                                            .getPossiblePropertyGroups()
+                                            .length >
+                                        1
+                                ? GestureDetector(
+                                    onTap: () {
+                                      int currentIndex = widget
+                                          ._product.propertyGroups
+                                          .indexOf(_getActiveGroup());
+                                      setState(() {
+                                        _setGroupActive(currentIndex - 1);
+                                      });
+                                      widget._changed();
+                                    },
+                                    child: Icon(Icons.arrow_back))
+                                : Container(),
+                            Container(
+                              padding:
+                                  EdgeInsets.all(Util.relWidth(context, 2.0)),
+                              child: Center(
+                                child: Text(
+                                  _getActiveGroup().name,
+                                  style: TextStyle(fontSize: 18.0),
+                                ),
+                              ),
+                            ),
+                            widget._product.propertyGroups
+                                            .indexOf(_getActiveGroup()) <
+                                        widget._product.propertyGroups.length -
+                                            1 &&
+                                    widget._product
+                                            .getPossiblePropertyGroups()
+                                            .length >
+                                        1
+                                ? GestureDetector(
+                                    onTap: () {
+                                      int currentIndex = widget
+                                          ._product.propertyGroups
+                                          .indexOf(_getActiveGroup());
+                                      setState(() {
+                                        _setGroupActive(currentIndex + 1);
+                                      });
+                                      widget._changed();
+                                    },
+                                    child: Icon(Icons.arrow_forward))
+                                : Container(),
+                          ])
+                        ],
+                      ),
+                      Divider(),
+                      AnimatedSize(
+                        duration: Duration(milliseconds: 200),
+                        vsync: this,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: List<Widget>.generate(
+                              widget._product.activeGroup.options.length,
+                              (i) => Center(
+                                  child: ListTile(
+                                      leading: Text(widget._product.activeGroup
+                                          .options[i].name),
+                                      title: Text(
+                                        "${widget._product.activeGroup.options[i].activeValues(widget._product.propertyValues).length}   gewählt",
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(
+                                            fontSize: 12.0,
+                                            color: widget._product.activeGroup
+                                                        .options[i]
+                                                        .activeValues(widget
+                                                            ._product
+                                                            .propertyValues)
+                                                        .length ==
+                                                    0
+                                                ? Colors.red
+                                                : null),
+                                      ),
+                                      trailing: Icon(Icons.chevron_right),
+                                      onTap: () => _generateOptionSelector(
+                                            context,
+                                            widget._product.activeGroup
+                                                .options[i],
+                                          )))),
                         ),
-                        widget._product.propertyGroups
-                                    .indexOf(_getActiveGroup()) <
-                                widget._product.propertyGroups.length - 1
-                            ? GestureDetector(
-                                onTap: () {
-                                  int currentIndex = widget
-                                      ._product.propertyGroups
-                                      .indexOf(_getActiveGroup());
-                                  setState(() {
-                                    _setGroupActive(currentIndex + 1);
-                                  });
-                                  widget._changed();
-                                },
-                                child: Icon(Icons.arrow_forward))
-                            : Container(),
-                      ])
+                      )
                     ],
                   ),
-                  Divider(),
-                  AnimatedSize(
-                    duration: Duration(milliseconds: 200),
-                    vsync: this,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: List<Widget>.generate(
-                          widget._product.activeGroup.options.length,
-                          (i) => Center(
-                              child: ListTile(
-                                  leading: Text(widget
-                                      ._product.activeGroup.options[i].name),
-                                  title: Text(
-                                    "${widget._product.activeGroup.options[i].activeValues(widget._product.propertyValues).length}   gewählt",
-                                    textAlign: TextAlign.right,
-                                    style: TextStyle(
-                                        fontSize: 12.0,
-                                        color: widget._product.activeGroup
-                                                    .options[i]
-                                                    .activeValues(widget
-                                                        ._product
-                                                        .propertyValues)
-                                                    .length ==
-                                                0
-                                            ? Colors.red
-                                            : null),
-                                  ),
-                                  trailing: Icon(Icons.chevron_right),
-                                  onTap: () => _generateOptionSelector(
-                                        context,
-                                        widget._product.activeGroup.options[i],
-                                      )))),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
+                ),
+              );
+  }
+
+  @override
+  void action() {
+    setState(() {});
   }
 }
 

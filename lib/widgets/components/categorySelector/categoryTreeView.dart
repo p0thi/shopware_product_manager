@@ -1,15 +1,14 @@
+import 'package:diKapo/models/product.dart';
 import 'package:diKapo/models/productCategory.dart';
 import 'package:diKapo/util/Util.dart';
 import 'package:diKapo/widgets/components/categorySelector/activatableChip.dart';
 import 'package:flutter/material.dart';
 
 class CategoryTreeView extends StatefulWidget {
-  final List<ProductCategory> _activeCategories;
+  final Product _product;
   final Function _inputChanged;
 
-  CategoryTreeView(this._activeCategories, this._inputChanged);
-
-  get activeCategories => _activeCategories;
+  CategoryTreeView(this._product, this._inputChanged);
 
   @override
   _CategoryTreeViewState createState() => _CategoryTreeViewState();
@@ -39,13 +38,14 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
                 Container(
                   height: Util.relWidth(
                       context,
-                      ((widget._activeCategories.length - 1) ~/ 3 + 1) *
+                      ((widget._product.categories.length - 1) ~/ 3 + 1) *
                           Util.relHeight(context, .9)),
                   child: GridView.count(
                     mainAxisSpacing: Util.relHeight(context, .5),
                     crossAxisSpacing: Util.relWidth(context, 1.0),
                     childAspectRatio: 4.5,
-                    children: List.of(widget._activeCategories.map((category) {
+                    children:
+                        List.of(widget._product.categories.map((category) {
                       return Material(
                         elevation: .5,
                         child: Center(
@@ -77,28 +77,30 @@ class _CategoryTreeViewState extends State<CategoryTreeView> {
                 child: _allCategories != null
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: List.of(ProductCategory.getRealRoots(
-                                _allCategories)
-                            .map((category) => CategoryItem(
-                                    category,
-                                    _allCategories,
-                                    widget._activeCategories, (id, isActive) {
-                                  ProductCategory myCategory =
-                                      ProductCategory.getById(
-                                          id, _allCategories);
-                                  setState(() {
-                                    if (isActive) {
-                                      widget._activeCategories.add(myCategory);
-                                      widget._inputChanged();
-                                    }
-                                    if (!isActive) {
-                                      ProductCategory.removeById(
-                                          id, widget._activeCategories);
-                                      widget._inputChanged();
+                        children: List.of(
+                            ProductCategory.getRealRoots(_allCategories).map(
+                                (category) => CategoryItem(
+                                        category,
+                                        _allCategories,
+                                        widget._product.categories,
+                                        (id, isActive) {
+                                      ProductCategory myCategory =
+                                          ProductCategory.getById(
+                                              id, _allCategories);
+                                      setState(() {
+                                        List<ProductCategory> cat =
+                                            widget._product.categories;
+                                        if (isActive) {
+                                          cat.add(myCategory);
+                                        }
+                                        if (!isActive) {
+                                          ProductCategory.removeById(id, cat);
 //                              widget._activeCategories.remove(myCategory);
-                                    }
-                                  });
-                                }))),
+                                        }
+                                        widget._inputChanged();
+                                        widget._product.categories = cat;
+                                      });
+                                    }))),
                       )
                     : Container(),
               ),

@@ -23,50 +23,69 @@ class PriceSelector extends StatefulWidget {
 class _PriceSelectorState extends State<PriceSelector> {
   TextEditingController _priceController;
   TextEditingController _fakePriceController;
+  FocusNode _priceFieldFocusNode = FocusNode();
+  FocusNode _fakePriceFieldFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    _priceController = TextEditingController(
-        text: widget._price.toStringAsFixed(2).replaceAll(".", ","));
-    _fakePriceController = TextEditingController(
-        text: widget._fakePrice.toStringAsFixed(2).replaceAll(".", ","));
   }
 
   @override
   Widget build(BuildContext context) {
+    _priceController = TextEditingController(
+        text: widget._price.toStringAsFixed(2).replaceAll(".", ","));
+    _fakePriceController = TextEditingController(
+        text: widget._hasFake
+            ? widget._fakePrice.toStringAsFixed(2).replaceAll(".", ",")
+            : "deaktiviert");
     return Container(
       child: Column(
         children: <Widget>[
           Card(
+            elevation: 3.0,
             child: Container(
               padding: EdgeInsets.all(8.0),
               child: Column(
                 children: <Widget>[
                   Text(
-                    "Vorschau",
-                    style: TextStyle(fontSize: Util.relWidth(context, 4.0)),
+                    "Vorschau:",
+                    style: TextStyle(
+                        fontSize: Util.relWidth(context, 5.0),
+                        color: Colors.blue),
                   ),
                   Divider(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
                       Text("Preis: "),
-                      Text(
-                        "${widget._price.toStringAsFixed(2).replaceAll(".", ",")} €",
-                        style: TextStyle(
-                            color: Colors.green,
-                            fontSize: Util.relWidth(context, 3.8),
-                            fontWeight: FontWeight.bold),
+                      GestureDetector(
+                        onTap: () {
+                          FocusScope.of(context)
+                              .requestFocus(_priceFieldFocusNode);
+                        },
+                        child: Text(
+                          "${widget._price.toStringAsFixed(2).replaceAll(".", ",")} €",
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontSize: Util.relWidth(context, 3.8),
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                       widget._hasFake
-                          ? Text(
-                              "${widget._fakePrice.toStringAsFixed(2).replaceAll(".", ",")} €",
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: Util.relWidth(context, 3.8),
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.lineThrough),
+                          ? GestureDetector(
+                              onTap: () {
+                                FocusScope.of(context)
+                                    .requestFocus(_fakePriceFieldFocusNode);
+                              },
+                              child: Text(
+                                "${widget._fakePrice.toStringAsFixed(2).replaceAll(".", ",")} €",
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: Util.relWidth(context, 3.8),
+                                    fontWeight: FontWeight.bold,
+                                    decoration: TextDecoration.lineThrough),
+                              ),
                             )
                           : Container()
                     ],
@@ -109,6 +128,7 @@ class _PriceSelectorState extends State<PriceSelector> {
                   Container(
                     child: TextField(
                       controller: _priceController,
+                      focusNode: _priceFieldFocusNode,
                       keyboardType:
                           TextInputType.numberWithOptions(signed: false),
                       decoration: InputDecoration(labelText: "Preis"),
@@ -121,26 +141,27 @@ class _PriceSelectorState extends State<PriceSelector> {
                       },
                     ),
                   ),
-                  widget._hasFake ? Divider() : Container(),
-                  widget._hasFake
-                      ? Container(
-                          child: TextField(
-                            controller: _fakePriceController,
-                            keyboardType:
-                                TextInputType.numberWithOptions(signed: false),
-                            decoration:
-                                InputDecoration(labelText: "Fake Preis"),
-                            onChanged: (value) {
-                              setState(() {
-                                widget._fakePrice = double.tryParse(
-                                        value.replaceAll(",", ".")) ??
-                                    .0;
-                                widget._inputChanged();
-                              });
-                            },
-                          ),
-                        )
-                      : Container()
+                  Divider(),
+                  Container(
+                    child: TextField(
+                      controller: _fakePriceController,
+                      focusNode: _fakePriceFieldFocusNode,
+                      enabled: widget._hasFake,
+                      style: !widget._hasFake
+                          ? TextStyle(color: Colors.grey[400])
+                          : null,
+                      keyboardType:
+                          TextInputType.numberWithOptions(signed: false),
+                      decoration: InputDecoration(labelText: "Fake Preis"),
+                      onChanged: (value) {
+                        setState(() {
+                          widget._fakePrice =
+                              double.tryParse(value.replaceAll(",", ".")) ?? .0;
+                          widget._inputChanged();
+                        });
+                      },
+                    ),
+                  )
                 ],
               ),
             ),
